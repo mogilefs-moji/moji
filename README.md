@@ -28,7 +28,7 @@ Import the Moji Spring context:
   
 *Or* create a Moji spring bean:
 
-        <bean id="moji" class="fm.last.commons.mogilefs.spring.SpringMojiBean" destroy-method="close">
+        <bean id="moji" class="fm.last.moji.spring.SpringMojiBean" destroy-method="close">
           <constructor-arg value="${moji.tracker.address}" />
           <constructor-arg value="${moji.domain}" />
           <property name="maxActive" value="${moji.pool.max.active:100}" />
