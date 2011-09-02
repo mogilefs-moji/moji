@@ -6,7 +6,7 @@ CLASS=${test.moji.class.a}
 IFS=$'\n';
 
 function clear_test_data {
-  KEYS=`mogtool listkey $KEY_PREFIX --trackers=$TRACKERS --domain=$DOMAIN`
+  KEYS=`moglistkeys $KEY_PREFIX --trackers=$TRACKERS --domain=$DOMAIN`
 
   for key in $KEYS
   do
@@ -15,7 +15,7 @@ function clear_test_data {
       break;
     fi
     echo "Deleting: '$key' ..."
-    mogtool delete $key --trackers=$TRACKERS --domain=$DOMAIN
+    mogdelete $key --trackers=$TRACKERS --domain=$DOMAIN
   done;
 }
 
