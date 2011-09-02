@@ -106,7 +106,7 @@ To run the integration tests you need:
 
 * A unix-type system (for shell script execution - FIXME)
 * A test MogileFS tracker and a storage node ([installation instructions](http://code.google.com/p/mogilefs/wiki/InstallHowTo "Google Code - MogileFS installation instructions"))
-* `mogtool, mogupload`
+* `mogdelete, moglistkeys, mogupload`
 * `uuencode` (apt-get install sharutil)
 
 MogileFS integration test properties config:
