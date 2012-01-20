@@ -82,7 +82,7 @@ public class LocalFileSystemMoji implements Moji {
       String key = namingStrategy.keyForFileName(file.getName());
       mojiFiles.add(new LocalMojiFile(namingStrategy, baseFolder, domain, key));
     }
-    return null;
+    return mojiFiles;
   }
 
   @Override

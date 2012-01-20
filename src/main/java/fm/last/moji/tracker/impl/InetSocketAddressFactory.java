@@ -40,6 +40,7 @@ public class InetSocketAddressFactory {
   }
 
   public static InetSocketAddress newAddress(String addressString) {
+    // TODO: Default mogile port
     String[] parts = addressString.split(":");
     String host = parts[0];
     int port = Integer.valueOf(parts[1]);
