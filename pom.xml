@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -30,7 +31,7 @@
       <layout>default</layout>
     </snapshotRepository>
   </distributionManagement>
- 
+
   <developers>
     <developer>
       <name>Elliot West</name>
@@ -77,20 +78,6 @@
       <resource>
         <directory>src/main/conf</directory>
       </resource>
-      <resource>
-        <directory>src/test/script</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.sh</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/test/script</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.sh</include>
-        </includes>
-      </resource>
     </resources>
 
     <testResources>
@@ -99,6 +86,13 @@
       </testResource>
       <testResource>
         <directory>src/test/conf</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/script</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.sh</include>
+        </includes>
       </testResource>
     </testResources>
 
@@ -143,7 +137,7 @@
             <id>init-mogile-fs-test-data</id>
             <phase>pre-integration-test</phase>
             <configuration>
-              <executable>${project.basedir}/target/classes/init-mogile-test-data.sh</executable>
+              <executable>${project.basedir}/target/test-classes/init-mogile-test-data.sh</executable>
               <workingDirectory>${project.basedir}/src/test</workingDirectory>
             </configuration>
             <goals>
