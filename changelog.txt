@@ -1,3 +1,3 @@
-TBA
+1.1.0 (2012-01-20)
 - Using mogdelete, moglistkeys in favour of mogtool
 - Initial release
