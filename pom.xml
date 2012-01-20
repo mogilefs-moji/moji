@@ -15,6 +15,23 @@
     <connection>scm:git:ssh:git@github.com:lastfm/moji.git</connection>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>last.fm</id>
+      <name>Last.fm</name>
+      <url>http://repo.last.fm/repo/content/repositories/releases</url>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>last.fm</id>
+      <name>Last.fm</name>
+      <url>http://repo.last.fm/repo/content/repositories/snapshots</url>
+      <layout>default</layout>
+    </snapshotRepository>
+  </distributionManagement>
+ 
   <developers>
     <developer>
       <name>Elliot West</name>
