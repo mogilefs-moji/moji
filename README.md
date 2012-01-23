@@ -132,7 +132,7 @@ This project uses the [Maven](http://maven.apache.org/) build system.
 We plan to support the [Java 7 FileSystem abstraction](http://openjdk.java.net/projects/nio/ "OpenJDK: NIO") now it's been officially released.
 
 #Legal
-Copyright 2011 [Last.fm](http://www.last.fm/)
+Copyright 2012 [Last.fm](http://www.last.fm/)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

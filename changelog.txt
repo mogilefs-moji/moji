@@ -3,6 +3,6 @@ TBA
 - Default local moji file now uses base64 encoding for filenames to avoid escaping issues
 - Default local moji file supports modification of storage class
 
-1.1.0 (2011-01-19)
+1.1.0 (2012-01-20)
 - Using mogdelete, moglistkeys in favour of mogtool
 - Initial release
