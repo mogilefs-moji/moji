@@ -101,6 +101,15 @@ Impose a limit on the number of items returned:
         List<URL> paths = fooFighters.getPaths();
         // http://192.168.0.2:7500/dev2/0/000/000/0000000819.fid, http://192.168.0.4:7500/dev3/0/000/000/0000000819.fid, etc
 
+####Get the attributes of a remote file
+Note: this is only supported on more recent versions of MogileFS.
+        File fooFighters = moji.getFile("in-your-honour"); 
+        MojiFileAttributes attributes = fooFighters.getAttibutes();
+        
+        String storageClass = attributes.getStorageClass();
+        int deviceCount = attributes.getDeviceCount();
+        int fid = attributes.getFid();
+
 #Running the integration tests
 To run the integration tests you need:
 
