@@ -17,6 +17,7 @@ package fm.last.moji.tracker;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service interface of the MogileFS 'backend'.
@@ -27,6 +28,8 @@ import java.util.List;
 public interface Tracker {
 
   List<URL> getPaths(String key, String domain) throws TrackerException;
+
+  Map<String, String> fileInfo(String key, String domain) throws TrackerException;
 
   List<Destination> createOpen(String key, String domain, String storageClass) throws TrackerException;
 

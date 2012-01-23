@@ -18,7 +18,17 @@ package fm.last.moji.local;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @deprecated Does not support 'storage class' and has character restrictions - use a
+ *             {@link fm.last.moji.local.Base64FileNamingStrategy Base32LocalFileNamingStrategy} instead.
+ */
+@Deprecated
 class DefaultFileNamingStrategy implements LocalFileNamingStrategy {
+
+  private static final Logger log = LoggerFactory.getLogger(DefaultFileNamingStrategy.class);
 
   private final File baseFolder;
 
@@ -27,7 +37,7 @@ class DefaultFileNamingStrategy implements LocalFileNamingStrategy {
   }
 
   @Override
-  public String newfileName(String domain, String key) {
+  public String newFileName(String domain, String key, String storageClass) {
     return domain + "-" + key + ".dat";
   }
 
@@ -88,6 +98,12 @@ class DefaultFileNamingStrategy implements LocalFileNamingStrategy {
       String key = keyForFileName(name);
       return key.startsWith(keyPrefix);
     }
+  }
+
+  @Override
+  public String storageClassForFileName(String fileName) {
+    log.warn("This implementation does not support the persisting of storage classes!", getClass().getSimpleName());
+    return null;
   }
 
 }

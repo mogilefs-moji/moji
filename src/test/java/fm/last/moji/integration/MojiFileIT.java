@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import fm.last.moji.MojiFile;
+import fm.last.moji.MojiFileAttributes;
 import fm.last.moji.tracker.KeyExistsAlreadyException;
 import fm.last.moji.tracker.UnknownKeyException;
 import fm.last.moji.tracker.UnknownStorageClassException;
@@ -72,8 +73,7 @@ public class MojiFileIT extends AbstractMojiIT {
 
     writeDataToMogileFile(newFile, data);
     assertTrue(newFile.exists());
-    // We cannot know the storage class currently
-    // assertEquals(newFile.getStorageClass(), storageClassA);
+    assertEquals(newFile.getAttributes().getStorageClass(), storageClassA);
 
     assertEquals(data, downloadDataFromMogileFile(newFile));
   }
@@ -146,15 +146,29 @@ public class MojiFileIT extends AbstractMojiIT {
   }
 
   @Test
+  public void getAttributes() throws IOException {
+    String originalKey = newKey("attributes");
+    MojiFile forAttributes = getFile(originalKey);
+
+    MojiFileAttributes attributes = forAttributes.getAttributes();
+    assertEquals(storageClassA, attributes.getStorageClass());
+    assertEquals(originalKey, attributes.getKey());
+    assertEquals(forAttributes.getDomain(), attributes.getDomain());
+    assertEquals(3832, attributes.getLength());
+    assertEquals(1, attributes.getDeviceCount());
+    assertTrue(attributes.getFid() > 0);
+  }
+
+  @Test
   public void updateStorageClass() throws IOException {
     String key = newKey("updateStorageClass");
     MojiFile fileToUpdate = getFile(key, storageClassA);
-    // We cannot know the storage class currently
-    // assertEquals(fileToUpdate.getStorageClass(), storageClassA);
+    MojiFileAttributes attributes = fileToUpdate.getAttributes();
+    assertEquals(storageClassA, attributes.getStorageClass());
 
     fileToUpdate.modifyStorageClass(storageClassB);
-    // We cannot know the storage class currently
-    // assertEquals(fileToUpdate.getStorageClass(), storageClassB);
+    attributes = fileToUpdate.getAttributes();
+    assertEquals(storageClassB, attributes.getStorageClass());
 
     MojiFile exists = getFile(key, storageClassB);
     assertTrue(exists.exists());

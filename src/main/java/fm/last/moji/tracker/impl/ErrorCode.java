@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 enum ErrorCode {
-  UNKNOWN_KEY("unknown_key"), KEY_EXISTS("key_exists"), UNKNOWN_CLASS("unreg_class", "class_not_found"), NONE_MATCH(
-      "none_match");
+  UNKNOWN_KEY("unknown_key"), UNKNOWN_COMMAND("unknown_command"), KEY_EXISTS("key_exists"), UNKNOWN_CLASS(
+      "unreg_class", "class_not_found"), NONE_MATCH("none_match");
 
   private Set<String> messages;
 

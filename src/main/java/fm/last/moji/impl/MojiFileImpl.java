@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fm.last.moji.MojiFile;
+import fm.last.moji.MojiFileAttributes;
 import fm.last.moji.tracker.TrackerFactory;
 
 class MojiFileImpl implements MojiFile {
@@ -166,6 +167,9 @@ class MojiFileImpl implements MojiFile {
   @Override
   public void modifyStorageClass(String newStorageClass) throws IOException {
     log.debug("setStorageClass() : {}", this);
+    if (storageClass == null) {
+      throw new IllegalArgumentException("storageClass == null");
+    }
     try {
       lock.writeLock().lock();
       UpdateStorageClassCommand command = new UpdateStorageClassCommand(key, domain, newStorageClass);
@@ -193,6 +197,22 @@ class MojiFileImpl implements MojiFile {
   }
 
   @Override
+  public MojiFileAttributes getAttributes() throws IOException {
+    log.debug("getAttributes() : {}", this);
+    MojiFileAttributes attributes = null;
+    try {
+      lock.readLock().lock();
+      GetAttributesCommand command = new GetAttributesCommand(key, domain);
+      executor.executeCommand(command);
+      attributes = command.getAttributes();
+      log.debug("getAttributes() -> {}", attributes);
+    } finally {
+      lock.readLock().unlock();
+    }
+    return attributes;
+  }
+
+  @Override
   public String getKey() {
     return key;
   }
@@ -201,12 +221,6 @@ class MojiFileImpl implements MojiFile {
   public String getDomain() {
     return domain;
   }
-
-  // We cannot know the storage class currently
-  // @Override
-  // public String getStorageClass() {
-  // return storageClass;
-  // }
 
   @Override
   public String toString() {

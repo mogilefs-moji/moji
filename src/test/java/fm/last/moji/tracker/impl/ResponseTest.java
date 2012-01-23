@@ -36,6 +36,26 @@ public class ResponseTest {
   }
 
   @Test
+  public void valueMap() {
+    Response response = new Response(ResponseStatus.OK,
+        "path2=http://127.0.0.61:7500/dev469/0/173/153/0173153702.fid&path1="
+            + "http://127.0.0.62:7500/dev490/0/173/153/0173153702.fid&paths=2");
+    assertThat(response.getStatus(), is(ResponseStatus.OK));
+    assertThat(response.getValueMap().get("paths"), is("2"));
+    assertThat(response.getValueMap().get("path1"), is("http://127.0.0.62:7500/dev490/0/173/153/0173153702.fid"));
+    assertThat(response.getValueMap().get("path2"), is("http://127.0.0.61:7500/dev469/0/173/153/0173153702.fid"));
+    assertThat(response.getMessage(), is(nullValue()));
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void valueMapImmutable() {
+    Response response = new Response(ResponseStatus.OK,
+        "path2=http://127.0.0.61:7500/dev469/0/173/153/0173153702.fid&path1="
+            + "http://127.0.0.62:7500/dev490/0/173/153/0173153702.fid&paths=2");
+    response.getValueMap().clear();
+  }
+
+  @Test
   public void badPair() {
     Response response = new Response(ResponseStatus.OK,
         "path2=http://127.0.0.61:7500/dev469/0/173/153/0173153702.fid&path1"

@@ -18,6 +18,7 @@ package fm.last.moji.tracker.pool;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.pool.KeyedObjectPool;
 import org.slf4j.Logger;
@@ -54,6 +55,19 @@ class BorrowedTracker implements Tracker {
       throw e;
     }
     return paths;
+  }
+
+  @Override
+  public Map<String, String> fileInfo(String key, String domain) throws TrackerException {
+    Map<String, String> attributes = Collections.emptyMap();
+    try {
+      attributes = delegate.fileInfo(key, domain);
+      host.markSuccess();
+    } catch (CommunicationException e) {
+      lastException = e;
+      throw e;
+    }
+    return attributes;
   }
 
   @Override

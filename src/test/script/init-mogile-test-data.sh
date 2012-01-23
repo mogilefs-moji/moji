@@ -49,5 +49,6 @@ upload_new_random_file list3
 upload_new_random_file getPaths
 
 upload_file fileOfKnownSize data/fileOfKnownSize.dat
+upload_file attributes data/fileOfKnownSize.dat
 upload_file mogileFileCopyToFile data/mogileFileCopyToFile.dat
 exit 0

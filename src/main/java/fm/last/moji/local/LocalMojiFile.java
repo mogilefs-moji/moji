@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import fm.last.moji.MojiFile;
+import fm.last.moji.MojiFileAttributes;
 
 class LocalMojiFile implements MojiFile {
 
@@ -37,13 +38,19 @@ class LocalMojiFile implements MojiFile {
   final File file;
   private String key;
   private final LocalFileNamingStrategy namingStrategy;
+  private String storageClass;
 
-  LocalMojiFile(LocalFileNamingStrategy namingStrategy, File baseDir, String domain, String key) {
+  LocalMojiFile(LocalFileNamingStrategy namingStrategy, File baseDir, String domain, String key, String storageClass) {
     this.namingStrategy = namingStrategy;
     this.baseDir = baseDir;
     this.key = key;
     this.domain = domain;
-    file = new File(baseDir, namingStrategy.newfileName(domain, key));
+    this.storageClass = storageClass;
+    file = new File(baseDir, namingStrategy.newFileName(domain, key, storageClass));
+  }
+
+  LocalMojiFile(LocalFileNamingStrategy namingStrategy, File baseFolder, String domain, String key) {
+    this(namingStrategy, baseFolder, domain, key, "");
   }
 
   @Override
@@ -96,7 +103,7 @@ class LocalMojiFile implements MojiFile {
     if (!file.exists()) {
       throw new FileNotFoundException(file.getCanonicalPath());
     }
-    file.renameTo(new File(baseDir, namingStrategy.newfileName(domain, newKey)));
+    file.renameTo(new File(baseDir, namingStrategy.newFileName(domain, newKey, storageClass)));
     key = newKey;
   }
 
@@ -116,8 +123,15 @@ class LocalMojiFile implements MojiFile {
   }
 
   @Override
-  public void modifyStorageClass(String storageClass) throws IOException {
-    // ignored
+  public void modifyStorageClass(String newStorageClass) throws IOException {
+    if (storageClass == null) {
+      throw new IllegalArgumentException("storageClass == null");
+    }
+    if (!file.exists()) {
+      throw new FileNotFoundException(file.getCanonicalPath());
+    }
+    file.renameTo(new File(baseDir, namingStrategy.newFileName(domain, key, newStorageClass)));
+    this.storageClass = newStorageClass;
   }
 
   @Override
@@ -129,8 +143,19 @@ class LocalMojiFile implements MojiFile {
     builder.append(key);
     builder.append(", file=");
     builder.append(file);
+    builder.append(", storageClass=");
+    builder.append(storageClass);
     builder.append("]");
     return builder.toString();
+  }
+
+  @Override
+  public MojiFileAttributes getAttributes() throws IOException {
+    return new LocalMojiFileAttributes(this);
+  }
+
+  String getStorageClass() {
+    return storageClass;
   }
 
 }

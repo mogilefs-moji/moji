@@ -24,7 +24,7 @@ import java.io.FilenameFilter;
  */
 public interface LocalFileNamingStrategy {
 
-  String newfileName(String domain, String key);
+  String newFileName(String domain, String key, String storageClass);
 
   String domainForFileName(String fileName);
 
@@ -33,5 +33,7 @@ public interface LocalFileNamingStrategy {
   File folderForDomain(String domain);
 
   FilenameFilter filterForPrefix(String domain, String keyPrefix);
+
+  String storageClassForFileName(String fileName);
 
 }

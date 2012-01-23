@@ -49,6 +49,10 @@ class Response {
     return status;
   }
 
+  Map<String, String> getValueMap() {
+    return values;
+  }
+
   String getValue(String key) {
     return values.get(key);
   }
@@ -72,7 +76,7 @@ class Response {
         }
         map.put(pair[0], URLDecoder.decode(pair[1], UTF_8.value()));
       }
-      return map;
+      return Collections.unmodifiableMap(map);
     } catch (UnsupportedEncodingException e) {
       log.error("Problem decoding response", e);
       return null;

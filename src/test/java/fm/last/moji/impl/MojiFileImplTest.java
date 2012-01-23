@@ -16,6 +16,7 @@
 package fm.last.moji.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -29,7 +30,9 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +41,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import fm.last.moji.MojiFileAttributes;
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
@@ -147,27 +151,6 @@ public class MojiFileImplTest {
     assertThat(captor.getValue().newStorageClass, is(STORAGE_CLASS_2));
   }
 
-  // We cannot know the storage class currently
-  // @Test
-  // public void storageClassChangesInFile() throws IOException {
-  // assertThat(file.getStorageClass(), is(STORAGE_CLASS));
-  // file.modifyStorageClass(STORAGE_CLASS_2);
-  // assertThat(file.getStorageClass(), is(STORAGE_CLASS_2));
-  // }
-
-  // We cannot know the storage class currently
-  // @Test
-  // public void storageClassNotModifiedOnError() throws IOException {
-  // file.setExecutor(mockExecutor);
-  // doThrow(new IOException()).when(mockExecutor).executeCommand(any(UpdateStorageClassCommand.class));
-  // assertThat(file.getStorageClass(), is(STORAGE_CLASS));
-  // try {
-  // file.modifyStorageClass(STORAGE_CLASS_2);
-  // } catch (IOException ignored) {
-  // }
-  // assertThat(file.getStorageClass(), is(STORAGE_CLASS));
-  // }
-
   @Test
   public void lengthCommand() throws IOException {
     file.setExecutor(mockExecutor);
@@ -249,6 +232,27 @@ public class MojiFileImplTest {
     when(mockTracker.getPaths(KEY, DOMAIN)).thenReturn(trackerPaths);
     List<URL> paths = file.getPaths();
     assertThat(paths, is(trackerPaths));
+  }
+
+  @Test
+  public void fileInfo() throws IOException {
+    Map<String, String> responseValues = new HashMap<String, String>();
+    responseValues.put("domain", "domain2");
+    responseValues.put("key", "key2");
+    responseValues.put("class", "default");
+    responseValues.put("length", "100");
+    responseValues.put("devcount", "2");
+    responseValues.put("fid", "5645");
+
+    when(mockTracker.fileInfo(KEY, DOMAIN)).thenReturn(responseValues);
+
+    MojiFileAttributes attributes = file.getAttributes();
+    assertEquals(attributes.getDomain(), "domain2");
+    assertEquals(attributes.getKey(), "key2");
+    assertEquals(attributes.getStorageClass(), "default");
+    assertEquals(attributes.getLength(), 100L);
+    assertEquals(attributes.getDeviceCount(), 2);
+    assertEquals(attributes.getFid(), 5645);
   }
 
 }

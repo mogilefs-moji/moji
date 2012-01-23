@@ -87,6 +87,12 @@ public class BorrowedTrackerTest {
   }
 
   @Test
+  public void getFileInfoDelegates() throws TrackerException {
+    borrowedTracker.fileInfo(KEY1, DOMAIN);
+    verify(mockTracker).fileInfo(KEY1, DOMAIN);
+  }
+
+  @Test
   public void createOpenDelegates() throws TrackerException {
     borrowedTracker.createOpen(KEY1, DOMAIN, STORAGE_CLASS);
     verify(mockTracker).createOpen(KEY1, DOMAIN, STORAGE_CLASS);

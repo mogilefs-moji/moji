@@ -1,3 +1,8 @@
 TBA
+- Now supports file_info command via MojiFile.getAttributes();
+- Default local moji file now uses base64 encoding for filenames to avoid escaping issues
+- Default local moji file supports modification of storage class
+
+1.1.0 (2011-01-19)
 - Using mogdelete, moglistkeys in favour of mogtool
 - Initial release

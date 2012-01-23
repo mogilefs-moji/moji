@@ -17,12 +17,14 @@ package fm.last.moji.tracker.impl;
 
 import static fm.last.moji.tracker.impl.ErrorCode.KEY_EXISTS;
 import static fm.last.moji.tracker.impl.ErrorCode.UNKNOWN_CLASS;
+import static fm.last.moji.tracker.impl.ErrorCode.UNKNOWN_COMMAND;
 import static fm.last.moji.tracker.impl.ErrorCode.UNKNOWN_KEY;
 import static fm.last.moji.tracker.impl.ResponseStatus.OK;
 
 import java.net.Socket;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.KeyExistsAlreadyException;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
+import fm.last.moji.tracker.UnknownCommandException;
 import fm.last.moji.tracker.UnknownKeyException;
 import fm.last.moji.tracker.UnknownStorageClassException;
 import fm.last.moji.tracker.impl.Request.Builder;
@@ -53,6 +56,20 @@ class TrackerImpl implements Tracker {
     GetPathsOperation operation = new GetPathsOperation(requestHandler, domain, key, false);
     operation.execute();
     return operation.getPaths();
+  }
+
+  @Override
+  public Map<String, String> fileInfo(String key, String domain) throws TrackerException {
+    String command = "file_info";
+    Request request = new Request.Builder(10).command(command).arg("domain", domain).arg("key", key).build();
+    Response response = requestHandler.performRequest(request);
+    if (response.getStatus() != OK) {
+      String message = response.getMessage();
+      handleUnknownKeyException(key, domain, message);
+      handleUnknownCommandException(command, message);
+      throw new TrackerException(message);
+    }
+    return response.getValueMap();
   }
 
   @Override
@@ -157,6 +174,12 @@ class TrackerImpl implements Tracker {
   private void handleUnknownKeyException(String key, String domain, String message) throws UnknownKeyException {
     if (UNKNOWN_KEY.isContainedInLine(message)) {
       throw new UnknownKeyException(domain, key);
+    }
+  }
+
+  private void handleUnknownCommandException(String command, String message) throws UnknownCommandException {
+    if (UNKNOWN_COMMAND.isContainedInLine(message)) {
+      throw new UnknownCommandException(command);
     }
   }
 

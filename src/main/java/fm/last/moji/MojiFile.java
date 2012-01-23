@@ -120,4 +120,9 @@ public interface MojiFile {
    */
   String getDomain();
 
+  /**
+   * @throws IOException
+   */
+  MojiFileAttributes getAttributes() throws IOException;
+
 }

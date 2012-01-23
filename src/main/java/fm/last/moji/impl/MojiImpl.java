@@ -49,11 +49,14 @@ class MojiImpl implements Moji {
   @Override
   public MojiFile getFile(String key) {
     log.debug("new {}()", MojiFileImpl.class.getSimpleName());
-    return new MojiFileImpl(key, domain, null, trackerFactory, httpFactory);
+    return new MojiFileImpl(key, domain, "", trackerFactory, httpFactory);
   }
 
   @Override
   public MojiFile getFile(String key, String storageClass) {
+    if (storageClass == null) {
+      throw new IllegalArgumentException("storageClass == null");
+    }
     log.debug("new {}() with storage class", MojiFileImpl.class.getSimpleName());
     return new MojiFileImpl(key, domain, storageClass, trackerFactory, httpFactory);
   }

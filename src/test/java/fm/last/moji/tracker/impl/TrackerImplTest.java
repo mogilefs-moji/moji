@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.KeyExistsAlreadyException;
 import fm.last.moji.tracker.TrackerException;
+import fm.last.moji.tracker.UnknownCommandException;
 import fm.last.moji.tracker.UnknownKeyException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,6 +71,33 @@ public class TrackerImplTest {
     when(mockResponse.getValue("paths")).thenReturn("0");
     List<URL> paths = tracker.getPaths(KEY, DOMAIN);
     assertThat(paths.size(), is(0));
+  }
+
+  @Test
+  public void fileInfoRequest() throws Exception {
+    Map<String, String> attributes = tracker.fileInfo(KEY, DOMAIN);
+
+    Request request = requestCaptor.getValue();
+    assertThat(request.getCommand(), is("file_info"));
+    assertThat(request.getArguments().size(), is(2));
+    assertThat(request.getArguments().get("domain"), is(DOMAIN));
+    assertThat(request.getArguments().get("key"), is(KEY));
+
+    assertThat(attributes.isEmpty(), is(true));
+  }
+
+  @Test(expected = UnknownCommandException.class)
+  public void fileInfoOldMogileVersion() throws Exception {
+    when(mockResponse.getStatus()).thenReturn(ResponseStatus.ERROR);
+    when(mockResponse.getMessage()).thenReturn("unknown_command");
+    tracker.fileInfo(KEY, DOMAIN);
+  }
+
+  @Test(expected = UnknownKeyException.class)
+  public void fileInfoUnknownKey() throws Exception {
+    when(mockResponse.getStatus()).thenReturn(ResponseStatus.ERROR);
+    when(mockResponse.getMessage()).thenReturn("unknown_key");
+    tracker.fileInfo(KEY, DOMAIN);
   }
 
   @Test

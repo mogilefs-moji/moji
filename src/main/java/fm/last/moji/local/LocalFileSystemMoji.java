@@ -36,7 +36,7 @@ public class LocalFileSystemMoji implements Moji {
   private final String domain;
 
   public LocalFileSystemMoji(File baseFolder, String domain) {
-    this(baseFolder, domain, new DefaultFileNamingStrategy(baseFolder));
+    this(baseFolder, domain, new Base64FileNamingStrategy(baseFolder));
   }
 
   public LocalFileSystemMoji(File baseFolder, String domain, LocalFileNamingStrategy namingStrategy) {
@@ -65,7 +65,7 @@ public class LocalFileSystemMoji implements Moji {
 
   @Override
   public MojiFile getFile(String key, String storageClass) {
-    return new LocalMojiFile(namingStrategy, baseFolder, domain, key);
+    return new LocalMojiFile(namingStrategy, baseFolder, domain, key, storageClass);
   }
 
   @Override
