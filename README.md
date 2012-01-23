@@ -103,6 +103,7 @@ Impose a limit on the number of items returned:
 
 ####Get the attributes of a remote file
 Note: this is only supported on more recent versions of MogileFS.
+
         File fooFighters = moji.getFile("in-your-honour"); 
         MojiFileAttributes attributes = fooFighters.getAttibutes();
         
