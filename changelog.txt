@@ -1,4 +1,4 @@
-TBA
+1.1.1 (2012-01-27)
 - Now supports file_info command via MojiFile.getAttributes();
 - Default local moji file now uses base64 encoding for filenames to avoid escaping issues
 - Default local moji file supports modification of storage class
