@@ -92,7 +92,7 @@ class FileUploadOutputStream extends OutputStream {
           try {
             String message = httpConnection.getResponseMessage();
             int code = httpConnection.getResponseCode();
-            if (HttpURLConnection.HTTP_OK != code) {
+            if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code ) {
               throw new IOException(code + " " + message);
             } else {
               log.debug("Status: HTTP {} - {}", code, message);
