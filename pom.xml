@@ -4,7 +4,7 @@
 
   <groupId>fm.last.commons</groupId>
   <artifactId>moji</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.2</version>
   <name>Moji</name>
   <description>A File-like MogileFS client</description>
 
