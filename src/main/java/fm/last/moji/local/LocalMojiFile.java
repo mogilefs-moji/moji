@@ -35,10 +35,10 @@ class LocalMojiFile implements MojiFile {
 
   private final String domain;
   private final File baseDir;
-  final File file;
   private String key;
   private final LocalFileNamingStrategy namingStrategy;
   private String storageClass;
+  File file;
 
   LocalMojiFile(LocalFileNamingStrategy namingStrategy, File baseDir, String domain, String key, String storageClass) {
     this.namingStrategy = namingStrategy;
@@ -103,7 +103,9 @@ class LocalMojiFile implements MojiFile {
     if (!file.exists()) {
       throw new FileNotFoundException(file.getCanonicalPath());
     }
-    file.renameTo(new File(baseDir, namingStrategy.newFileName(domain, newKey, storageClass)));
+    File destination = new File(baseDir, namingStrategy.newFileName(domain, newKey, storageClass));
+    file.renameTo(destination);
+    file = destination;
     key = newKey;
   }
 
