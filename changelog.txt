@@ -1,5 +1,6 @@
 1.1.2 (2012-03-01)
 - Fixed issue with LocalMojiFile where internal file was not updated to the new destination.
+- Support for storage backend like Apache that reponses a "201 Created" instead of "200 OK"
 
 1.1.1 (2012-01-27)
 - Now supports file_info command via MojiFile.getAttributes();
