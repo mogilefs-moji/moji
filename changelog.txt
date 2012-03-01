@@ -1,4 +1,5 @@
 TBA
+- Fixed issue with LocalMojiFile where internal file was not updated to the new destination.
 - Now supports file_info command via MojiFile.getAttributes();
 - Default local moji file now uses base64 encoding for filenames to avoid escaping issues
 - Default local moji file supports modification of storage class
