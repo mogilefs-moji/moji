@@ -1,4 +1,4 @@
-TBA
+1.1.2 (2012-03-01)
 - Fixed issue with LocalMojiFile where internal file was not updated to the new destination.
 
 1.1.1 (2012-01-27)
