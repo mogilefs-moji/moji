@@ -52,16 +52,7 @@ class FileLengthCommand implements MojiCommand {
           log.debug("HTTP HEAD -> {}", path);
           httpConnection = httpFactory.newConnection(path);
           httpConnection.setRequestMethod("HEAD");
-          // length = httpConnection.getContentLengthLong();
-          // Since getContentLengthLong() only available since Java 7, we do the conversion here.
-          String rawLength = httpConnection.getHeaderField("Content-Length");
-          
-          try{
-        	  length = Long.parseLong(rawLength);
-          } catch (NumberFormatException e) {
-        	  log.debug("Failed to parse Content-Length: {}", rawLength);
-        	  length=-1L;
-          }
+          length = getContentLength(httpConnection);
           log.debug("Content-Length: {}", length);
           return;
         } catch (IOException e) {
@@ -104,6 +95,20 @@ class FileLengthCommand implements MojiCommand {
     builder.append(length);
     builder.append("]");
     return builder.toString();
+  }
+
+  /* Since getContentLengthLong() only available since Java 7, we do the conversion here. */
+  private long getContentLength(HttpURLConnection httpConnection) {
+    long length = 0;
+    String rawLength = httpConnection.getHeaderField("Content-Length");
+
+    try {
+      length = Long.parseLong(rawLength);
+    } catch (NumberFormatException e) {
+      log.debug("Failed to parse Content-Length: {}", rawLength);
+      length = -1L;
+    }
+    return length;
   }
 
 }
