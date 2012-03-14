@@ -167,7 +167,7 @@ public class MojiFileImplTest {
     List<URL> paths = Collections.singletonList(path);
     when(mockTracker.getPaths(KEY, DOMAIN)).thenReturn(paths);
     when(mockHttpFactory.newConnection(path)).thenReturn(mockUrlConnection);
-    when(mockUrlConnection.getContentLength()).thenReturn(74634654);
+    when(mockUrlConnection.getHeaderField("Content-Length")).thenReturn("74634654");
 
     // check that whatever we have delegates to the expected stream
     long length = file.length();
