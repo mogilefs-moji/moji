@@ -121,7 +121,7 @@ To run the integration tests you need:
 
 MogileFS integration test properties config:
 
-* These properties should be set in `/moji.properties`
+* These properties should be set in `/moji.properties` on the classpath.
 * Set your Tracker address with the property:
 
         moji.tracker.hosts
