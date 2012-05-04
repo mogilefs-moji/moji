@@ -33,7 +33,7 @@ public class DefaultMojiFactory implements MojiFactory {
   public DefaultMojiFactory(TrackerFactory trackerFactory, String defaultDomain) {
     this.trackerFactory = trackerFactory;
     this.defaultDomain = defaultDomain;
-    httpFactory = new HttpConnectionFactory(trackerFactory.getProxy());
+    httpFactory = new HttpConnectionFactory(trackerFactory.getNetworkingConfiguration());
   }
 
   @Override

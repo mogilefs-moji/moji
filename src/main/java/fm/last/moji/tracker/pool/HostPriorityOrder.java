@@ -18,9 +18,8 @@ package fm.last.moji.tracker.pool;
 import java.io.Serializable;
 import java.util.Comparator;
 
-class HostPriorityComparator implements Comparator<ManagedTrackerHost>, Serializable {
-
-  private static final long serialVersionUID = 1L;
+enum HostPriorityOrder implements Comparator<ManagedTrackerHost>, Serializable {
+  INSTANCE;
 
   @Override
   public int compare(ManagedTrackerHost a, ManagedTrackerHost b) {

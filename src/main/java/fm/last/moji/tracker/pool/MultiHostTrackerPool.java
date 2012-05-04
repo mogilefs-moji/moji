@@ -42,7 +42,6 @@ import fm.last.moji.tracker.impl.AbstractTrackerFactory;
 public class MultiHostTrackerPool implements TrackerFactory {
 
   private static final Logger log = LoggerFactory.getLogger(MultiHostTrackerPool.class);
-  private static final HostPriorityComparator PRIORITY_COMPARATOR = new HostPriorityComparator();
 
   private final NetworkingConfiguration netConfig;
   private final GenericKeyedObjectPool pool;
@@ -211,7 +210,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
   private ManagedTrackerHost nextHost() throws TrackerException {
     ManagedTrackerHost managedHost = null;
     synchronized (managedHosts) {
-      Collections.sort(managedHosts, PRIORITY_COMPARATOR);
+      Collections.sort(managedHosts, HostPriorityOrder.INSTANCE);
       managedHost = managedHosts.get(managedHosts.size() - 1);
     }
     return managedHost;
