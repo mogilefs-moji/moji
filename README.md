@@ -11,15 +11,15 @@ A file-like [MogileFS](http://danga.com/mogilefs/ "Danga Interactive - MogileFS"
 
 #Configuration
 ### Using plain-old-Java
-        String hosts = "192.168.0.1,192.168.0.2";
-        String domain = "testdomain";
-    
-        Moji moji = new SpringMojiBean(hosts, domain);
+        Moji moji = new SpringMojiBean();
+        bean.setAddressesCsv("192.168.0.1:7001,192.168.0.2:7001");
+        bean.setDomain("testdomain");
+        bean.initialise();
         moji.setTestOnBorrow(true);
 ### Using the Spring framework
 Set some properties for your context:
 
-        moji.tracker.address=192.168.0.1,192.168.0.2
+        moji.tracker.address=192.168.0.1:7001,192.168.0.2:7001
         moji.domain=testdomain
         
 Import the Moji Spring context:
@@ -29,8 +29,8 @@ Import the Moji Spring context:
 *Or* create a Moji spring bean:
 
         <bean id="moji" class="fm.last.moji.spring.SpringMojiBean" destroy-method="close">
-          <constructor-arg value="${moji.tracker.address}" />
-          <constructor-arg value="${moji.domain}" />
+          <property name="addressesCsv" value="${moji.tracker.address}" />
+          <property name="domain" value="${moji.domain}" />
           <property name="maxActive" value="${moji.pool.max.active:100}" />
           <property name="maxIdle" value="${moji.pool.max.idle:10}" />
           <property name="testOnBorrow" value="${moji.pool.test.on.borrow:true}" />
