@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -118,6 +119,7 @@ public class SpringMojiBean implements Moji {
   /**
    * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#close()}
    */
+  @PreDestroy
   public void close() throws Exception {
     poolingTrackerFactory.close();
   }
