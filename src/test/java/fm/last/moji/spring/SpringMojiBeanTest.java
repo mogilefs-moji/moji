@@ -32,7 +32,10 @@ public class SpringMojiBeanTest {
 
   @Before
   public void init() {
-    bean = new SpringMojiBean("localhost:80", "domain");
+    bean = new SpringMojiBean();
+    bean.setAddressesCsv("localhost:80");
+    bean.setDomain("domain");
+    bean.initialise();
   }
 
   @After
