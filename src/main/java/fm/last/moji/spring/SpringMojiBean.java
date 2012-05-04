@@ -22,9 +22,14 @@ import java.net.Proxy;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.StringUtils;
+
 import fm.last.moji.Moji;
 import fm.last.moji.MojiFile;
 import fm.last.moji.impl.DefaultMojiFactory;
+import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.impl.InetSocketAddressFactory;
 import fm.last.moji.tracker.pool.MultiHostTrackerPool;
 
@@ -33,16 +38,40 @@ import fm.last.moji.tracker.pool.MultiHostTrackerPool;
  */
 public class SpringMojiBean implements Moji {
 
-  private final Moji moji;
-  private final MultiHostTrackerPool poolingTrackerFactory;
+  private String addressesCsv;
+  private String domain;
 
+  private final NetworkingConfiguration networkingConfig = new NetworkingConfiguration();
+  private Moji moji;
+  private MultiHostTrackerPool poolingTrackerFactory;
+
+  public SpringMojiBean() {
+  }
+
+  /** Retained for API compatibility only - use {@link SpringMojiBean#SpringMojiBean()} instead. */
+  @Deprecated
   public SpringMojiBean(String addressesCsv, String domain) {
     this(addressesCsv, Proxy.NO_PROXY, domain);
   }
 
+  /** Retained for API compatibility only - use {@link SpringMojiBean#SpringMojiBean()} instead. */
+  @Deprecated
   public SpringMojiBean(String addressesCsv, Proxy proxy, String domain) {
+    this.addressesCsv = addressesCsv;
+    this.domain = domain;
+    networkingConfig.setProxy(proxy);
+  }
+
+  @PostConstruct
+  public void initialise() {
+    if (StringUtils.isBlank(addressesCsv)) {
+      throw new IllegalStateException("addressesCsv not set");
+    }
+    if (StringUtils.isBlank(domain)) {
+      throw new IllegalStateException("domain not set");
+    }
     Set<InetSocketAddress> addresses = InetSocketAddressFactory.newAddresses(addressesCsv);
-    poolingTrackerFactory = new MultiHostTrackerPool(addresses, proxy);
+    poolingTrackerFactory = new MultiHostTrackerPool(addresses, networkingConfig);
     DefaultMojiFactory factory = new DefaultMojiFactory(poolingTrackerFactory, domain);
     moji = factory.getInstance();
   }
@@ -175,6 +204,58 @@ public class SpringMojiBean implements Moji {
    */
   public int getNumIdle() {
     return poolingTrackerFactory.getNumIdle();
+  }
+
+  public String getAddressesCsv() {
+    return addressesCsv;
+  }
+
+  public void setAddressesCsv(String addressesCsv) {
+    this.addressesCsv = addressesCsv;
+  }
+
+  public String getDomain() {
+    return domain;
+  }
+
+  public void setDomain(String domain) {
+    this.domain = domain;
+  }
+
+  public int getTrackerConnectTimeout() {
+    return networkingConfig.getTrackerConnectTimeout();
+  }
+
+  public void setTrackerConnectTimeout(int trackerConnectTimeout) {
+    networkingConfig.setTrackerConnectTimeout(trackerConnectTimeout);
+  }
+
+  public int getTrackerSoTimeout() {
+    return networkingConfig.getTrackerReadTimeout();
+  }
+
+  public void setTrackerSoTimeout(int trackerSoTimeout) {
+    networkingConfig.setTrackerReadTimeout(trackerSoTimeout);
+  }
+
+  public int getHttpConnectTimeout() {
+    return networkingConfig.getHttpConnectTimeout();
+  }
+
+  public void setHttpConnectTimeout(int httpConnectTimeout) {
+    networkingConfig.setHttpConnectTimeout(httpConnectTimeout);
+  }
+
+  public int getHttpReadTimeout() {
+    return networkingConfig.getHttpReadTimeout();
+  }
+
+  public void setHttpReadTimeout(int httpReadTimeout) {
+    networkingConfig.setHttpReadTimeout(httpReadTimeout);
+  }
+
+  public void setProxy(Proxy proxy) {
+    networkingConfig.setProxy(proxy);
   }
 
 }

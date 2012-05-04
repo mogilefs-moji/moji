@@ -1,4 +1,6 @@
 TBA
+- Added ability to configure network timeouts
+- SpringMojiBean must now be initialised by the Spring context (this used to occur in the constructor). 
 - Merged cclien's content length fix for file sizes > Integer.MAX_LENGTH
 
 1.1.2 (2012-03-01)

@@ -37,6 +37,10 @@ import fm.last.moji.tracker.pool.MultiHostTrackerPool;
  * <ul>
  * <li><code>moji.domain</code></li>
  * <li><code>moji.tracker.hosts</code></li>
+ * <li><code>moji.tracker.connect.timeout</code> (optional)</li>
+ * <li><code>moji.tracker.so.timeout</code> (optional)</li>
+ * <li><code>moji.http.connect.timeout</code> (optional)</li>
+ * <li><code>moji.http.read.timeout</code> (optional)</li>
  * </ul>
  * <p>
  * The properties are loaded from a <code>/moji.properties</code> classpath resource by default. The resource path can
@@ -49,8 +53,12 @@ public class PropertyMojiFactory implements MojiFactory {
 
   private static final String HOSTS_PROPERTY = "moji.tracker.hosts";
   private static final String DOMAIN_PROPERTY = "moji.domain";
+  private static final String TRACKER_CONNECT_T_O_PROPERTY = "moji.tracker.connect.timeout";
+  private static final String TRACKER_READ_T_O_PROPERTY = "moji.tracker.so.timeout";
+  private static final String HTTP_CONNECT_T_O_PROPERTY = "moji.http.connect.timeout";
+  private static final String HTTP_READ_T_O_PROPERTY = "moji.http.read.timeout";
 
-  private final Proxy proxy;
+  private final NetworkingConfiguration netConfig;
   private volatile boolean initialised;
   private String defaultDomain;
   private TrackerFactory trackerFactory;
@@ -59,7 +67,7 @@ public class PropertyMojiFactory implements MojiFactory {
 
   public PropertyMojiFactory(String propertiesPath, Proxy proxy) throws IOException {
     this.propertiesPath = System.getProperty(RESOURCE_PATH_PROPERTY, propertiesPath);
-    this.proxy = proxy;
+    netConfig = new NetworkingConfiguration.Builder().proxy(proxy).build();
   }
 
   public PropertyMojiFactory(String propertiesPath) throws IOException {
@@ -94,8 +102,13 @@ public class PropertyMojiFactory implements MojiFactory {
         defaultDomain = getDomain(properties);
         Set<InetSocketAddress> addresses = InetSocketAddressFactory.newAddresses(addressesCsv);
 
-        trackerFactory = new MultiHostTrackerPool(addresses, proxy);
-        httpFactory = new HttpConnectionFactory(trackerFactory.getProxy());
+        netConfig.setHttpConnectTimeout(getTimeout(HTTP_CONNECT_T_O_PROPERTY, properties));
+        netConfig.setHttpReadTimeout(getTimeout(HTTP_READ_T_O_PROPERTY, properties));
+        netConfig.setTrackerConnectTimeout(getTimeout(TRACKER_CONNECT_T_O_PROPERTY, properties));
+        netConfig.setTrackerReadTimeout(getTimeout(TRACKER_READ_T_O_PROPERTY, properties));
+
+        trackerFactory = new MultiHostTrackerPool(addresses, netConfig);
+        httpFactory = new HttpConnectionFactory(trackerFactory.getNetworkingConfiguration());
         initialised = true;
       }
     }
@@ -126,6 +139,16 @@ public class PropertyMojiFactory implements MojiFactory {
       throw new IllegalStateException(HOSTS_PROPERTY + " cannot be empty or null");
     }
     return host;
+  }
+
+  private int getTimeout(String propertyName, Properties properties) {
+    int timeout = 0;
+    try {
+      timeout = Integer.parseInt(properties.getProperty(propertyName, "0"));
+    } catch (NumberFormatException e) {
+      throw new IllegalStateException(propertyName + " must be an integer.");
+    }
+    return timeout;
   }
 
 }

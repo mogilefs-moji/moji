@@ -19,6 +19,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Set;
 
+import fm.last.moji.impl.NetworkingConfiguration;
+
 /**
  * Provides usable {@link Tracker} instances for communicating with the MogileFS 'backend'.
  */
@@ -44,6 +46,9 @@ public interface TrackerFactory {
    * 
    * @return The proxy, or {@link Proxy#NO_PROXY NO_PROXY} if no proxy has been set.
    */
+  @Deprecated
   Proxy getProxy();
+
+  NetworkingConfiguration getNetworkingConfiguration();
 
 }

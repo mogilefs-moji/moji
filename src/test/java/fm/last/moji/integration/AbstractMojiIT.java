@@ -61,7 +61,10 @@ abstract public class AbstractMojiIT {
     storageClassA = properties.getProperty("test.moji.class.a");
     storageClassB = properties.getProperty("test.moji.class.b");
 
-    moji = new SpringMojiBean(hosts, domain);
+    moji = new SpringMojiBean();
+    moji.setAddressesCsv(hosts);
+    moji.setDomain(domain);
+    moji.initialise();
     moji.setTestOnBorrow(true);
   }
 

@@ -20,6 +20,7 @@ import java.net.Proxy;
 import java.util.Collections;
 import java.util.Set;
 
+import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
@@ -39,8 +40,19 @@ public class SingleHostTrackerFactory implements TrackerFactory {
    * @param addresses Tracker host address
    * @param proxy Network proxy - use Proxy.NO_PROXY if a proxy isn't needed.
    */
+  @Deprecated
   public SingleHostTrackerFactory(InetSocketAddress address, Proxy proxy) {
-    delegateFactory = new AbstractTrackerFactory(proxy);
+    this(address, new NetworkingConfiguration.Builder().proxy(proxy).build());
+  }
+
+  /**
+   * Creates a tracker factory for the given host address and use the supplied network config.
+   * 
+   * @param addresses Tracker host address
+   * @param netConfig Network configuration.
+   */
+  public SingleHostTrackerFactory(InetSocketAddress address, NetworkingConfiguration netConfig) {
+    delegateFactory = new AbstractTrackerFactory(netConfig);
     this.address = address;
   }
 
@@ -55,19 +67,23 @@ public class SingleHostTrackerFactory implements TrackerFactory {
   }
 
   @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("SingletonTrackerFactory [address=");
-    builder.append(address);
-    builder.append(", proxy=");
-    builder.append(getProxy());
-    builder.append("]");
-    return builder.toString();
+  @Deprecated
+  public Proxy getProxy() {
+    return delegateFactory.getProxy();
   }
 
   @Override
-  public Proxy getProxy() {
-    return delegateFactory.getProxy();
+  public NetworkingConfiguration getNetworkingConfiguration() {
+    return delegateFactory.getNetworkingConfiguration();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("SingleHostTrackerFactory [networkingConfiguration=");
+    builder.append(delegateFactory.getNetworkingConfiguration());
+    builder.append("]");
+    return builder.toString();
   }
 
 }

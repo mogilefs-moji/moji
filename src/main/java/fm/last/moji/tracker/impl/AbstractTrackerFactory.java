@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 
@@ -39,10 +40,15 @@ public class AbstractTrackerFactory {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractTrackerFactory.class);
 
-  private final Proxy proxy;
+  private final NetworkingConfiguration netConfig;
 
+  @Deprecated
   public AbstractTrackerFactory(Proxy proxy) {
-    this.proxy = proxy;
+    this(new NetworkingConfiguration.Builder().proxy(proxy).build());
+  }
+
+  public AbstractTrackerFactory(NetworkingConfiguration netConfig) {
+    this.netConfig = netConfig;
   }
 
   public Tracker newTracker(InetSocketAddress newAddress) throws TrackerException {
@@ -52,9 +58,10 @@ public class AbstractTrackerFactory {
     Writer writer = null;
     Socket socket = null;
     try {
-      socket = new Socket(proxy);
+      socket = new Socket(netConfig.getProxy());
+      socket.setSoTimeout(netConfig.getTrackerReadTimeout());
       log.debug("Connecting to: {}:", newAddress, socket.getPort());
-      socket.connect(newAddress);
+      socket.connect(newAddress, netConfig.getTrackerConnectTimeout());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
       RequestHandler requestHandler = new RequestHandler(writer, reader);
@@ -68,15 +75,20 @@ public class AbstractTrackerFactory {
     return tracker;
   }
 
+  @Deprecated
   public Proxy getProxy() {
-    return proxy;
+    return netConfig.getProxy();
+  }
+
+  public NetworkingConfiguration getNetworkingConfiguration() {
+    return netConfig;
   }
 
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("AbstractTrackerFactory [proxy=");
-    builder.append(proxy);
+    builder.append("AbstractTrackerFactory [networkingConfiguration=");
+    builder.append(netConfig);
     builder.append("]");
     return builder.toString();
   }

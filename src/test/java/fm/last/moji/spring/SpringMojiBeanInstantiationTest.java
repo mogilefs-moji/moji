@@ -32,7 +32,10 @@ public class SpringMojiBeanInstantiationTest {
       FakeMogileFsServer.Builder builder = new FakeMogileFsServer.Builder();
       builder.whenRequestContains("delete ", "key=myKey", "domain=myDomain").thenRespond("OK ");
       server = builder.build();
-      SpringMojiBean bean = new SpringMojiBean(server.getAddressAsString(), "myDomain");
+      SpringMojiBean bean = new SpringMojiBean();
+      bean.setAddressesCsv(server.getAddressAsString());
+      bean.setDomain("myDomain");
+      bean.initialise();
       MojiFile file = bean.getFile("myKey");
       file.delete();
       assertThat(bean.getNumIdle(), is(1));

@@ -29,6 +29,7 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
@@ -43,18 +44,29 @@ public class MultiHostTrackerPool implements TrackerFactory {
   private static final Logger log = LoggerFactory.getLogger(MultiHostTrackerPool.class);
   private static final HostPriorityComparator PRIORITY_COMPARATOR = new HostPriorityComparator();
 
-  private final Proxy proxy;
+  private final NetworkingConfiguration netConfig;
   private final GenericKeyedObjectPool pool;
   private final List<ManagedTrackerHost> managedHosts;
 
   /**
    * Creates a tracker pool for the given host addresses and use the supplied network proxy.
    * 
-   * @param addresses Tracker host addresses
+   * @param addresses Tracker host addresses.
    * @param proxy Network proxy - use Proxy.NO_PROXY if a proxy isn't needed.
    */
+  @Deprecated
   public MultiHostTrackerPool(Set<InetSocketAddress> addresses, Proxy proxy) {
-    this.proxy = proxy;
+    this(addresses, new NetworkingConfiguration.Builder().proxy(proxy).build());
+  }
+
+  /**
+   * Creates a tracker pool for the given host addresses and use the supplied network proxy.
+   * 
+   * @param addresses Tracker host addresses.
+   * @param netConfig The networking configuration.
+   */
+  public MultiHostTrackerPool(Set<InetSocketAddress> addresses, NetworkingConfiguration netConfig) {
+    this.netConfig = netConfig;
     managedHosts = new ArrayList<ManagedTrackerHost>();
     for (InetSocketAddress address : addresses) {
       managedHosts.add(new ManagedTrackerHost(address));
@@ -86,8 +98,14 @@ public class MultiHostTrackerPool implements TrackerFactory {
   }
 
   @Override
+  @Deprecated
   public Proxy getProxy() {
-    return proxy;
+    return netConfig.getProxy();
+  }
+
+  @Override
+  public NetworkingConfiguration getNetworkingConfiguration() {
+    return netConfig;
   }
 
   /**
@@ -204,7 +222,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
     private final AbstractTrackerFactory delegateFactory;
 
     BorrowedTrackerObjectPoolFactory() {
-      delegateFactory = new AbstractTrackerFactory(proxy);
+      delegateFactory = new AbstractTrackerFactory(netConfig);
     }
 
     @Override

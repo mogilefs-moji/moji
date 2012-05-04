@@ -22,14 +22,22 @@ import java.net.URL;
 
 class HttpConnectionFactory {
 
-  private final Proxy proxy;
+  private final NetworkingConfiguration netConfig;
 
+  @Deprecated
   HttpConnectionFactory(Proxy proxy) {
-    this.proxy = proxy;
+    netConfig = new NetworkingConfiguration.Builder().proxy(proxy).build();
+  }
+
+  HttpConnectionFactory(NetworkingConfiguration netConfig) {
+    this.netConfig = netConfig;
   }
 
   HttpURLConnection newConnection(URL url) throws IOException {
-    return (HttpURLConnection) url.openConnection(proxy);
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection(netConfig.getProxy());
+    connection.setConnectTimeout(netConfig.getHttpConnectTimeout());
+    connection.setReadTimeout(netConfig.getHttpReadTimeout());
+    return connection;
   }
 
 }
