@@ -49,7 +49,7 @@ public interface Tracker {
    * 
    * @param oldKey The key to rename.
    * @param domain The domain in which the old key resides.
-   * @param domain The new key.
+   * @param newKey The new key.
    * @throws TrackerException If there was a problem deleting the key.
    */
   void rename(String oldKey, String domain, String newKey) throws TrackerException;

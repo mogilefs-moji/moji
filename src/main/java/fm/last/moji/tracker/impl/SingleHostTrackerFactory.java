@@ -37,7 +37,7 @@ public class SingleHostTrackerFactory implements TrackerFactory {
   /**
    * Creates a tracker factory for the given host address and use the supplied network proxy.
    * 
-   * @param addresses Tracker host address
+   * @param address Tracker host address.
    * @param proxy Network proxy - use Proxy.NO_PROXY if a proxy isn't needed.
    */
   @Deprecated
@@ -48,7 +48,7 @@ public class SingleHostTrackerFactory implements TrackerFactory {
   /**
    * Creates a tracker factory for the given host address and use the supplied network config.
    * 
-   * @param addresses Tracker host address
+   * @param address Tracker host address
    * @param netConfig Network configuration.
    */
   public SingleHostTrackerFactory(InetSocketAddress address, NetworkingConfiguration netConfig) {
