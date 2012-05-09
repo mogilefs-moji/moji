@@ -1,4 +1,4 @@
-TBA
+1.2.1 (2012-05-09)
 - Lifecycle of SpringMojiBean was ill-conceived - this has been resolved.
 
 1.2.0 (2012-05-04)
