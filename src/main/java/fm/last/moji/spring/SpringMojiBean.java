@@ -15,6 +15,9 @@
  */
 package fm.last.moji.spring;
 
+import static fm.last.moji.impl.NetworkingConfiguration.INFINITE_TIMEOUT;
+import static java.net.Proxy.NO_PROXY;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,9 +45,18 @@ public class SpringMojiBean implements Moji {
   private String addressesCsv;
   private String domain;
 
-  private final NetworkingConfiguration networkingConfig = new NetworkingConfiguration();
   private Moji moji;
   private MultiHostTrackerPool poolingTrackerFactory;
+  private Proxy proxy = NO_PROXY;
+  private int httpConnectTimeout = INFINITE_TIMEOUT;
+  private int httpReadTimeout = INFINITE_TIMEOUT;
+  private int trackerReadTimeout = INFINITE_TIMEOUT;
+  private int trackerConnectTimeout = INFINITE_TIMEOUT;
+  private Boolean testOnReturn;
+  private Boolean testOnBorrow;
+  private Integer maxIdle;
+  private Long maxWait;
+  private Integer maxActive;
 
   public SpringMojiBean() {
   }
@@ -52,17 +64,20 @@ public class SpringMojiBean implements Moji {
   /** Retained for API compatibility only - use {@link SpringMojiBean#SpringMojiBean()} instead. */
   @Deprecated
   public SpringMojiBean(String addressesCsv, String domain) {
-    this(addressesCsv, Proxy.NO_PROXY, domain);
+    this(addressesCsv, NO_PROXY, domain);
   }
 
   /** Retained for API compatibility only - use {@link SpringMojiBean#SpringMojiBean()} instead. */
   @Deprecated
   public SpringMojiBean(String addressesCsv, Proxy proxy, String domain) {
     this.addressesCsv = addressesCsv;
+    this.proxy = proxy;
     this.domain = domain;
-    networkingConfig.setProxy(proxy);
   }
 
+  /**
+   * Automatically called by Spring after the properties have been set.
+   */
   @PostConstruct
   public void initialise() {
     if (StringUtils.isBlank(addressesCsv)) {
@@ -71,8 +86,9 @@ public class SpringMojiBean implements Moji {
     if (StringUtils.isBlank(domain)) {
       throw new IllegalStateException("domain not set");
     }
+    NetworkingConfiguration netConfig = createNetworkConfiguration();
     Set<InetSocketAddress> addresses = InetSocketAddressFactory.newAddresses(addressesCsv);
-    poolingTrackerFactory = new MultiHostTrackerPool(addresses, networkingConfig);
+    createTrackerPool(netConfig, addresses);
     DefaultMojiFactory factory = new DefaultMojiFactory(poolingTrackerFactory, domain);
     moji = factory.getInstance();
   }
@@ -103,21 +119,21 @@ public class SpringMojiBean implements Moji {
   }
 
   /**
-   * See: {@link fm.last.moji.tracker.TrackerFactory#getProxy()}
+   * See: {@link fm.last.moji.tracker.TrackerFactory#getProxy()}.
    */
   public Proxy getProxy() {
-    return poolingTrackerFactory.getProxy();
+    return proxy;
   }
 
   /**
-   * See: {@link fm.last.moji.tracker.TrackerFactory#getAddresses()}
+   * See: {@link fm.last.moji.tracker.TrackerFactory#getAddresses()}.
    */
   public Set<InetSocketAddress> getAddresses() {
     return poolingTrackerFactory.getAddresses();
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#close()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#close()}.
    */
   @PreDestroy
   public void close() throws Exception {
@@ -125,77 +141,82 @@ public class SpringMojiBean implements Moji {
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getMaxActive()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getMaxActive()}.
    */
   public int getMaxActive() {
-    return poolingTrackerFactory.getMaxActive();
+    return maxActive;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxActive(int)}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxActive(int)}. Setting this value after
+   * {@link #initialise()} has been called will have no effect.
    */
   public void setMaxActive(int maxActive) {
-    poolingTrackerFactory.setMaxActive(maxActive);
+    this.maxActive = maxActive;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getMaxWait()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getMaxWait()}.
    */
   public long getMaxWait() {
-    return poolingTrackerFactory.getMaxWait();
+    return maxWait;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxWait(long)}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxWait(long)}. Setting this value after
+   * {@link #initialise()} has been called will have no effect.
    */
   public void setMaxWait(long maxWait) {
-    poolingTrackerFactory.setMaxWait(maxWait);
+    this.maxWait = maxWait;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getMaxIdle()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getMaxIdle()}.
    */
   public int getMaxIdle() {
-    return poolingTrackerFactory.getMaxIdle();
+    return maxIdle;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxIdle(int)}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxIdle(int)}. Setting this value after
+   * {@link #initialise()} has been called will have no effect.
    */
   public void setMaxIdle(int maxIdle) {
-    poolingTrackerFactory.setMaxIdle(maxIdle);
+    this.maxIdle = maxIdle;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getTestOnBorrow()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getTestOnBorrow()}.
    */
   public boolean getTestOnBorrow() {
-    return poolingTrackerFactory.getTestOnBorrow();
+    return testOnBorrow;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setTestOnBorrow(boolean)}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setTestOnBorrow(boolean)}. Setting this value after
+   * {@link #initialise()} has been called will have no effect.
    */
   public void setTestOnBorrow(boolean testOnBorrow) {
-    poolingTrackerFactory.setTestOnBorrow(testOnBorrow);
+    this.testOnBorrow = testOnBorrow;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getTestOnReturn()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getTestOnReturn()}.
    */
   public boolean getTestOnReturn() {
-    return poolingTrackerFactory.getTestOnReturn();
+    return testOnReturn;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setTestOnReturn(boolean)}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#setTestOnReturn(boolean)}. Setting this value after
+   * {@link #initialise()} has been called will have no effect.
    */
   public void setTestOnReturn(boolean testOnReturn) {
-    poolingTrackerFactory.setTestOnReturn(testOnReturn);
+    this.testOnReturn = testOnReturn;
   }
 
   /**
-   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getNumActive()}
+   * See: {@link org.apache.commons.pool.impl.GenericKeyedObjectPool#getNumActive()}.
    */
   public int getNumActive() {
     return poolingTrackerFactory.getNumActive();
@@ -212,6 +233,9 @@ public class SpringMojiBean implements Moji {
     return addressesCsv;
   }
 
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
   public void setAddressesCsv(String addressesCsv) {
     this.addressesCsv = addressesCsv;
   }
@@ -220,44 +244,87 @@ public class SpringMojiBean implements Moji {
     return domain;
   }
 
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
   public void setDomain(String domain) {
     this.domain = domain;
   }
 
   public int getTrackerConnectTimeout() {
-    return networkingConfig.getTrackerConnectTimeout();
+    return trackerConnectTimeout;
   }
 
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
   public void setTrackerConnectTimeout(int trackerConnectTimeout) {
-    networkingConfig.setTrackerConnectTimeout(trackerConnectTimeout);
+    this.trackerConnectTimeout = trackerConnectTimeout;
   }
 
-  public int getTrackerSoTimeout() {
-    return networkingConfig.getTrackerReadTimeout();
+  public int getTrackerReadTimeout() {
+    return trackerReadTimeout;
   }
 
-  public void setTrackerSoTimeout(int trackerSoTimeout) {
-    networkingConfig.setTrackerReadTimeout(trackerSoTimeout);
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
+  public void setTrackerSoTimeout(int trackerReadTimeout) {
+    this.trackerReadTimeout = trackerReadTimeout;
   }
 
   public int getHttpConnectTimeout() {
-    return networkingConfig.getHttpConnectTimeout();
+    return httpConnectTimeout;
   }
 
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
   public void setHttpConnectTimeout(int httpConnectTimeout) {
-    networkingConfig.setHttpConnectTimeout(httpConnectTimeout);
+    this.httpConnectTimeout = httpConnectTimeout;
   }
 
   public int getHttpReadTimeout() {
-    return networkingConfig.getHttpReadTimeout();
+    return httpReadTimeout;
   }
 
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
   public void setHttpReadTimeout(int httpReadTimeout) {
-    networkingConfig.setHttpReadTimeout(httpReadTimeout);
+    this.httpReadTimeout = httpReadTimeout;
   }
 
+  /**
+   * Setting this value after {@link #initialise()} has been called will have no effect.
+   */
   public void setProxy(Proxy proxy) {
-    networkingConfig.setProxy(proxy);
+    this.proxy = proxy;
+  }
+
+  private NetworkingConfiguration createNetworkConfiguration() {
+    return new NetworkingConfiguration.Builder().proxy(proxy).httpConnectTimeout(httpConnectTimeout)
+        .httpReadTimeout(httpReadTimeout).trackerConnectTimeout(trackerConnectTimeout)
+        .trackerReadTimeout(trackerReadTimeout).build();
+  }
+
+  private void createTrackerPool(NetworkingConfiguration netConfig, Set<InetSocketAddress> addresses) {
+    poolingTrackerFactory = new MultiHostTrackerPool(addresses, netConfig);
+    if (testOnBorrow != null) {
+      poolingTrackerFactory.setTestOnBorrow(testOnBorrow);
+    }
+    if (testOnReturn != null) {
+      poolingTrackerFactory.setTestOnReturn(testOnReturn);
+    }
+    if (maxActive != null) {
+      poolingTrackerFactory.setMaxActive(maxActive);
+    }
+    if (maxIdle != null) {
+      poolingTrackerFactory.setMaxIdle(maxIdle);
+    }
+    if (maxWait != null) {
+      poolingTrackerFactory.setMaxWait(maxWait);
+    }
   }
 
 }

@@ -1,3 +1,6 @@
+TBA
+- Lifecycle of SpringMojiBean was ill-conceived - this has been resolved.
+
 1.2.0 (2012-05-04)
 - Added ability to configure network timeouts
 - SpringMojiBean must now be initialised by the Spring context (this used to occur in the constructor). 

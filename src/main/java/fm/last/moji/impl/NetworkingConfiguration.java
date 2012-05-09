@@ -4,7 +4,7 @@ import java.net.Proxy;
 
 public class NetworkingConfiguration {
 
-  private static final int INFINITE_TIMEOUT = 0;
+  public static final int INFINITE_TIMEOUT = 0;
 
   private Proxy proxy = Proxy.NO_PROXY;
   private int trackerConnectTimeout = INFINITE_TIMEOUT;
