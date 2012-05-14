@@ -1,35 +1,29 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>fm.last.commons</groupId>
   <artifactId>moji</artifactId>
   <version>1.2.2-SNAPSHOT</version>
+  <packaging>jar</packaging>
   <name>Moji</name>
   <description>A File-like MogileFS client</description>
 
   <url>https://github.com/lastfm/moji</url>
 
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <scm>
+    <url>https://github.com/lastfm/moji</url>
     <connection>scm:git:git@github.com:lastfm/moji.git</connection>
   </scm>
-
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>last.fm</id>
-      <name>Last.fm</name>
-      <url>http://maven.datadev.last.fm/repo/content/repositories/releases</url>
-      <layout>default</layout>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>last.fm</id>
-      <name>Last.fm</name>
-      <url>http://maven.datadev.last.fm/repo/content/repositories/snapshots</url>
-      <layout>default</layout>
-    </snapshotRepository>
-  </distributionManagement>
 
   <developers>
     <developer>
@@ -100,6 +94,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.2.2</version>
+        <configuration>
+          <mavenExecutorId>forked-path</mavenExecutorId>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -221,6 +218,33 @@
       <properties>
         <moji.env>.hudson</moji.env>
       </properties>
+    </profile>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
