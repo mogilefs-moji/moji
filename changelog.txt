@@ -1,3 +1,9 @@
+1.2.2 (2012-05-14)
+- Copyright messages.
+- Updated POM to conform to Maven central requirements.
+- Changed groupId to 'fm.last'.
+- Using the Sonatype OSS parent POM for Maven central deployment.
+
 1.2.1 (2012-05-09)
 - Lifecycle of SpringMojiBean was ill-conceived - this has been resolved.
 
