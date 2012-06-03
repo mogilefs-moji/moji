@@ -31,8 +31,10 @@ public class ManagedTrackerHost {
 
   private static final Logger log = LoggerFactory.getLogger(ManagedTrackerHost.class);
 
-  private static final int ONE_MINUTE_IN_MS = 60000;
-
+  /**
+   * One minute in MS
+   */
+  private int timeToMakeReady = 60000;
   private final AtomicLong lastUsed = new AtomicLong();
   private final AtomicLong lastFailed = new AtomicLong();
   private final InetSocketAddress address;
@@ -41,6 +43,21 @@ public class ManagedTrackerHost {
 
   ManagedTrackerHost(InetSocketAddress address) {
     this.address = address;
+    this.resetTimer = new Timer();
+  }
+
+  /**
+   * Return time delay when wrong tacker is marked as ready
+   */
+  public int getTimeToMakeReady() {
+    return timeToMakeReady;
+  }
+
+  /**
+   * Set time delay when wrong tacker is marked as ready
+   */
+  public void setTimeToMakeReady(int timeToMakeReady) {
+    this.timeToMakeReady = timeToMakeReady;
   }
 
   /**
@@ -85,8 +102,8 @@ public class ManagedTrackerHost {
       if (resetTask != null) {
         resetTask.cancel();
       }
-      log.debug("Scheduling reset of {} in {}ms", address, ONE_MINUTE_IN_MS);
-      resetTimer.schedule(new ResetTask(), ONE_MINUTE_IN_MS);
+      log.debug("Scheduling reset of {} in {}ms", address, timeToMakeReady);
+      resetTimer.schedule(resetTask = new ResetTask(), timeToMakeReady);
     }
   }
 
