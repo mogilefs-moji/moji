@@ -34,6 +34,7 @@ import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
 import fm.last.moji.tracker.impl.AbstractTrackerFactory;
+import fm.last.moji.tracker.impl.CommunicationException;
 
 /**
  * {@link fm.last.moji.tracker.TrackerFactory TrackerFactory} implementation that provides a
@@ -82,7 +83,8 @@ public class MultiHostTrackerPool implements TrackerFactory {
     try {
       tracker = (Tracker) pool.borrowObject(managedHost);
     } catch (Exception e) {
-      throw new TrackerException(e);
+      log.warn("Unable connect to tracker {}", managedHost);
+      throw new CommunicationException();
     }
     return tracker;
   }
