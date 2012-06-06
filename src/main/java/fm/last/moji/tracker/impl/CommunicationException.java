@@ -28,15 +28,15 @@ public class CommunicationException extends TrackerException {
     super();
   }
 
-  CommunicationException(String message, Throwable cause) {
+  public CommunicationException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  CommunicationException(String message) {
+  public CommunicationException(String message) {
     super(message);
   }
 
-  CommunicationException(Throwable cause) {
+  public CommunicationException(Throwable cause) {
     super(cause);
   }
 

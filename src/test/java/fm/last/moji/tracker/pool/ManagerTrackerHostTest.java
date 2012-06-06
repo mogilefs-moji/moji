@@ -15,11 +15,20 @@
  */
 package fm.last.moji.tracker.pool;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,35 +36,65 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import fm.last.moji.time.Clock;
+import fm.last.moji.tracker.pool.ManagedTrackerHost.ResetTask;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ManagerTrackerHostTest {
 
+  @Mock
+  private InetSocketAddress mockAddress;
+  @Mock
+  private Timer mockTimer;
+  @Mock
+  private ManagedTrackerHost.ResetTask mockTask;
+  @Mock
+  private ManagedTrackerHost.ResetTaskFactory mockTaskFactory;
+  @Mock
+  private Clock mockClock;
+
+  private ManagedTrackerHost.ResetTask actualTask;
   private ManagedTrackerHost managedTrackerHost;
 
-  @Mock
-  InetSocketAddress mockAddress;
-
-  int timeOutInMs = 1000;
   @Before
-  public void init() {
-    managedTrackerHost = new ManagedTrackerHost(mockAddress);
-    managedTrackerHost.setTimeToMakeReady(timeOutInMs);
+  public void setup() {
+    managedTrackerHost = new ManagedTrackerHost(mockAddress, mockTimer, mockClock);
+    managedTrackerHost.setHostRetryInterval(10, MILLISECONDS);
+    managedTrackerHost.resetTaskFactory = mockTaskFactory;
+
+    actualTask = managedTrackerHost.new ResetTask();
+
+    doNothing().when(mockTimer).schedule(any(TimerTask.class), eq(1L));
+    when(mockClock.currentTimeMillis()).thenReturn(1L, 2L, 3L);
+    when(mockTaskFactory.newInstance()).thenReturn(mockTask, actualTask);
   }
 
   @Test
-  public void markFailedAndRestoreUnfailed() throws Exception {
+  public void hostMarkedAsFailedAndThenRetried() throws Exception {
     assertThat(managedTrackerHost.getLastFailed(), is(0L));
+
     managedTrackerHost.markAsFailed();
-    assertThat(managedTrackerHost.getLastFailed(), not(0L));
-    Thread.sleep(timeOutInMs / 2);
-    assertThat(managedTrackerHost.getLastFailed(), not(0L));
+    verify(mockTimer).schedule(mockTask, 10L);
+    assertThat(managedTrackerHost.getLastFailed(), is(1L));
+
     managedTrackerHost.markAsFailed();
-    Thread.sleep(timeOutInMs / 2 + timeOutInMs / 4);
-    assertThat(managedTrackerHost.getLastFailed(), not(0L));
-    Thread.sleep(timeOutInMs / 2);
+    verify(mockTask).cancel();
+    verify(mockTimer).schedule(actualTask, 10L);
+    assertThat(managedTrackerHost.getLastFailed(), is(2L));
+
+    actualTask.run();
     assertThat(managedTrackerHost.getLastFailed(), is(0L));
+
+    verify(mockTimer, times(2)).schedule(any(ResetTask.class), eq(10L));
+    verify(mockTaskFactory, times(2)).newInstance();
+    verifyNoMoreInteractions(mockTaskFactory, mockTimer);
   }
 
-
+  @Test
+  public void lastUsed() {
+    assertThat(managedTrackerHost.getLastUsed(), is(0L));
+    managedTrackerHost.getAddress();
+    assertThat(managedTrackerHost.getLastUsed(), is(1L));
+  }
 
 }

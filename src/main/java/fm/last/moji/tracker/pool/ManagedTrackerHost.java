@@ -15,14 +15,20 @@
  */
 package fm.last.moji.tracker.pool;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import fm.last.moji.time.Clock;
+import fm.last.moji.time.SystemClock;
 
 /**
  * Manages the status of a given tracker host. Knows when it last failed, when the last successful request occurred.
@@ -31,33 +37,37 @@ public class ManagedTrackerHost {
 
   private static final Logger log = LoggerFactory.getLogger(ManagedTrackerHost.class);
 
-  /**
-   * One minute in MS
-   */
-  private int timeToMakeReady = 60000;
-  private final AtomicLong lastUsed = new AtomicLong();
-  private final AtomicLong lastFailed = new AtomicLong();
+  private final AtomicLong lastUsed;
+  private final AtomicLong lastFailed;
   private final InetSocketAddress address;
-  private Timer resetTimer;
+  private int hostRetryInterval;
+  private TimeUnit hostRetryIntervalTimeUnit;
+  private final Timer resetTimer;
+  private final Clock clock;
   private ResetTask resetTask;
+  ResetTaskFactory resetTaskFactory;
+
+  ManagedTrackerHost(InetSocketAddress address, Timer resetTimer, Clock clock) {
+    lastUsed = new AtomicLong();
+    lastFailed = new AtomicLong();
+    hostRetryInterval = 1;
+    hostRetryIntervalTimeUnit = MINUTES;
+    this.resetTimer = resetTimer;
+    resetTaskFactory = new ResetTaskFactory();
+    this.clock = clock;
+    this.address = address;
+  }
 
   ManagedTrackerHost(InetSocketAddress address) {
-    this.address = address;
-    this.resetTimer = new Timer();
+    this(address, new Timer(), SystemClock.INSTANCE);
   }
 
   /**
-   * Return time delay when wrong tacker is marked as ready
+   * Set delay until a failed tracker is once more marked as ready.
    */
-  public int getTimeToMakeReady() {
-    return timeToMakeReady;
-  }
-
-  /**
-   * Set time delay when wrong tacker is marked as ready
-   */
-  public void setTimeToMakeReady(int timeToMakeReady) {
-    this.timeToMakeReady = timeToMakeReady;
+  void setHostRetryInterval(int interval, TimeUnit timeUnit) {
+    hostRetryInterval = interval;
+    hostRetryIntervalTimeUnit = timeUnit;
   }
 
   /**
@@ -66,7 +76,7 @@ public class ManagedTrackerHost {
    * @return Host address
    */
   public InetSocketAddress getAddress() {
-    lastUsed.set(System.currentTimeMillis());
+    lastUsed.set(clock.currentTimeMillis());
     return address;
   }
 
@@ -97,13 +107,15 @@ public class ManagedTrackerHost {
   }
 
   void markAsFailed() {
-    lastFailed.set(System.currentTimeMillis());
+    lastFailed.set(clock.currentTimeMillis());
     synchronized (resetTimer) {
       if (resetTask != null) {
         resetTask.cancel();
       }
-      log.debug("Scheduling reset of {} in {}ms", address, timeToMakeReady);
-      resetTimer.schedule(resetTask = new ResetTask(), timeToMakeReady);
+      log.debug("Scheduling reset of {} in {}{}(s)", new Object[] { address, hostRetryInterval,
+          hostRetryIntervalTimeUnit.name().toLowerCase() });
+      resetTask = resetTaskFactory.newInstance();
+      resetTimer.schedule(resetTask, hostRetryIntervalTimeUnit.toMillis(hostRetryInterval));
     }
   }
 
@@ -161,11 +173,21 @@ public class ManagedTrackerHost {
     return new Date(time).toString();
   }
 
-  private final class ResetTask extends TimerTask {
+  class ResetTask extends TimerTask {
+
+    ResetTask() {
+    }
+
     @Override
     public void run() {
       lastFailed.set(0);
       log.debug("Reset failure monitor for {}", address);
+    }
+  }
+
+  class ResetTaskFactory {
+    public ResetTask newInstance() {
+      return new ResetTask();
     }
   }
 
