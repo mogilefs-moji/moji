@@ -1,5 +1,5 @@
-TBA
-- Integrated igieon's fixes
+1.2.3 (2012-06-07)
+- Integrated igieon's multitracker fixes
 
 1.2.2 (2012-05-14)
 - Copyright messages.
