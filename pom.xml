@@ -10,7 +10,7 @@
 
   <groupId>fm.last</groupId>
   <artifactId>moji</artifactId>
-  <version>1.2.3</version>
+  <version>1.2.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Moji</name>
   <description>A File-like MogileFS client</description>
