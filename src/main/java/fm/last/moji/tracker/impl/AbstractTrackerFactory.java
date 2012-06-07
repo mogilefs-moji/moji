@@ -34,7 +34,8 @@ import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 
 /**
- * Provides some common {@link fm.last.moji.tracker.TrackerFactory TrackerFactory} functionality.
+ * Provides some common {@link fm.last.moji.tracker.TrackerFactory TrackerFactory} functionality. TODO: Rename this to
+ * BaseTrackerFactory - abstract is misleading.
  */
 public class AbstractTrackerFactory {
 
