@@ -17,11 +17,16 @@ package fm.last.moji.tracker.pool;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,33 +34,46 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import fm.last.moji.impl.NetworkingConfiguration;
-import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.impl.CommunicationException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultiHostTrackerPoolTest {
 
   @Mock
-  private InetSocketAddress mockAddress;
+  private NetworkingConfiguration netConfig;
+  @Mock
+  private GenericKeyedObjectPool pool;
+  @Mock
+  private ManagedTrackerHost managedHost1;
+  @Mock
+  private ManagedTrackerHost managedHost2;
+  @Mock
+  private InetSocketAddress mockAddress1;
+  @Mock
+  private InetSocketAddress mockAddress2;
 
-  private NetworkingConfiguration configuration;
-  private MultiHostTrackerPool pool;
+  private MultiHostTrackerPool trackerPool;
+  private List<ManagedTrackerHost> managedHosts;
 
   @Before
   public void setup() {
-    configuration = new NetworkingConfiguration();
-    pool = new MultiHostTrackerPool(Collections.singleton(mockAddress), configuration);
+    when(managedHost1.getAddress()).thenReturn(mockAddress1);
+    when(managedHost2.getAddress()).thenReturn(mockAddress2);
+    managedHosts = Arrays.asList(managedHost1, managedHost2);
+    trackerPool = new MultiHostTrackerPool(managedHosts, netConfig, pool);
   }
 
   @Test(expected = CommunicationException.class)
-  public void getTrackerConvertsException() throws TrackerException {
-    pool.getTracker();
+  public void getTrackerConvertsException() throws Exception {
+    when(pool.borrowObject(any(ManagedTrackerHost.class))).thenThrow(new IllegalStateException());
+    trackerPool.getTracker();
   }
 
   @Test
   public void getAddresses() {
-    Set<InetSocketAddress> actual = pool.getAddresses();
-    assertThat(actual, is(Collections.singleton(mockAddress)));
+    Set<InetSocketAddress> actual = trackerPool.getAddresses();
+    Set<InetSocketAddress> expected = new HashSet<InetSocketAddress>(Arrays.asList(mockAddress1, mockAddress2));
+    assertThat(actual, is(expected));
   }
 
 }

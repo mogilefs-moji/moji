@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.slf4j.Logger;
@@ -71,9 +70,20 @@ public class MultiHostTrackerPool implements TrackerFactory {
     for (InetSocketAddress address : addresses) {
       managedHosts.add(new ManagedTrackerHost(address));
     }
-    KeyedPoolableObjectFactory objectFactory = new BorrowedTrackerObjectPoolFactory();
+    AbstractTrackerFactory delegateTrackerFactory = new AbstractTrackerFactory(netConfig);
+    KeyedPoolableObjectFactory objectFactory = new BorrowedTrackerObjectPoolFactory(delegateTrackerFactory, this);
     pool = new GenericKeyedObjectPool(objectFactory);
     log.debug("Pool created");
+  }
+
+  /*
+   * For tests only
+   */
+  MultiHostTrackerPool(List<ManagedTrackerHost> managedHosts, NetworkingConfiguration netConfig,
+      GenericKeyedObjectPool pool) {
+    this.managedHosts = managedHosts;
+    this.netConfig = netConfig;
+    this.pool = pool;
   }
 
   @Override
@@ -208,6 +218,14 @@ public class MultiHostTrackerPool implements TrackerFactory {
     pool.close();
   }
 
+  void invalidateTracker(BorrowedTracker borrowedTracker) throws Exception {
+    pool.invalidateObject(borrowedTracker.getHost(), borrowedTracker);
+  }
+
+  void returnTracker(BorrowedTracker borrowedTracker) throws Exception {
+    pool.returnObject(borrowedTracker.getHost(), borrowedTracker);
+  }
+
   private ManagedTrackerHost nextHost() throws TrackerException {
     ManagedTrackerHost managedHost = null;
     synchronized (managedHosts) {
@@ -215,50 +233,6 @@ public class MultiHostTrackerPool implements TrackerFactory {
       managedHost = managedHosts.get(managedHosts.size() - 1);
     }
     return managedHost;
-  }
-
-  private class BorrowedTrackerObjectPoolFactory extends BaseKeyedPoolableObjectFactory {
-
-    private final AbstractTrackerFactory delegateFactory;
-
-    BorrowedTrackerObjectPoolFactory() {
-      delegateFactory = new AbstractTrackerFactory(netConfig);
-    }
-
-    @Override
-    public Object makeObject(Object key) throws Exception {
-      ManagedTrackerHost host = (ManagedTrackerHost) key;
-      Tracker delegate = delegateFactory.newTracker(host.getAddress());
-      BorrowedTracker borrowedTracker = new BorrowedTracker(host, delegate, pool);
-      log.debug("Requested new tracker instance: {}", key);
-      return borrowedTracker;
-    }
-
-    @Override
-    public void destroyObject(Object key, Object obj) throws Exception {
-      BorrowedTracker borrowed = (BorrowedTracker) obj;
-      if (borrowed.getLastException() != null) {
-        log.debug("Error occurred on tracker: {}", borrowed.getLastException().getMessage());
-        borrowed.getHost().markAsFailed();
-      }
-      log.debug("Destroying {}", borrowed);
-      borrowed.reallyClose();
-    }
-
-    @Override
-    public boolean validateObject(Object key, Object obj) {
-      BorrowedTracker borrowed = (BorrowedTracker) obj;
-      log.debug("Validating {}", borrowed);
-      try {
-        borrowed.noop();
-      } catch (TrackerException e) {
-        // returning false will result in a destroyObject invocation
-        // The address will then be marked out of service
-        return false;
-      }
-      return true;
-    }
-
   }
 
 }

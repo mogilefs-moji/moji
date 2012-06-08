@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.pool.KeyedObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +33,11 @@ class BorrowedTracker implements Tracker {
   private static final Logger log = LoggerFactory.getLogger(BorrowedTracker.class);
 
   private final Tracker delegate;
-  private final KeyedObjectPool pool;
+  private final MultiHostTrackerPool pool;
   private final ManagedTrackerHost host;
   private CommunicationException lastException;
 
-  BorrowedTracker(ManagedTrackerHost host, Tracker delegate, KeyedObjectPool pool) {
+  BorrowedTracker(ManagedTrackerHost host, Tracker delegate, MultiHostTrackerPool pool) {
     this.delegate = delegate;
     this.host = host;
     this.pool = pool;
@@ -157,13 +156,13 @@ class BorrowedTracker implements Tracker {
       if (lastException != null) {
         log.debug("Invalidating: {}", lastException);
         try {
-          pool.invalidateObject(host, this);
+          pool.invalidateTracker(this);
         } finally {
           delegate.close();
         }
       } else {
         log.debug("Returning to pool");
-        pool.returnObject(host, this);
+        pool.returnTracker(this);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);

@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-import org.apache.commons.pool.KeyedObjectPool;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +41,7 @@ public class BorrowedTrackerTest {
   @Mock
   private Tracker mockTracker;
   @Mock
-  private KeyedObjectPool mockPool;
+  private MultiHostTrackerPool mockPool;
   @Mock
   private Destination mockDestination;
   @Mock
@@ -58,7 +57,7 @@ public class BorrowedTrackerTest {
   @Test
   public void closeReturnsToPool() throws Exception {
     borrowedTracker.close();
-    verify(mockPool).returnObject(mockHost, borrowedTracker);
+    verify(mockPool).returnTracker(borrowedTracker);
     verifyZeroInteractions(mockTracker);
   }
 
@@ -70,7 +69,7 @@ public class BorrowedTrackerTest {
     } catch (CommunicationException e) {
     }
     borrowedTracker.close();
-    verify(mockPool).invalidateObject(mockHost, borrowedTracker);
+    verify(mockPool).invalidateTracker(borrowedTracker);
   }
 
   @Test
