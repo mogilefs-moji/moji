@@ -76,7 +76,6 @@ public class ManagedTrackerHost {
    * @return Host address
    */
   public InetSocketAddress getAddress() {
-    lastUsed.set(clock.currentTimeMillis());
     return address;
   }
 
@@ -120,6 +119,7 @@ public class ManagedTrackerHost {
   }
 
   void markSuccess() {
+    lastUsed.set(clock.currentTimeMillis());
     lastFailed.set(0);
   }
 

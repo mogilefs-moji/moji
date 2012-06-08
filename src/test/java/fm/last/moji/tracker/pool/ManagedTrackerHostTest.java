@@ -93,8 +93,16 @@ public class ManagedTrackerHostTest {
   @Test
   public void lastUsed() {
     assertThat(managedTrackerHost.getLastUsed(), is(0L));
-    managedTrackerHost.getAddress();
+    managedTrackerHost.markSuccess();
     assertThat(managedTrackerHost.getLastUsed(), is(1L));
+  }
+
+  @Test
+  public void markSuccess() {
+    managedTrackerHost.markAsFailed();
+    assertThat(managedTrackerHost.getLastFailed(), is(1L));
+    managedTrackerHost.markSuccess();
+    assertThat(managedTrackerHost.getLastFailed(), is(0L));
   }
 
 }
