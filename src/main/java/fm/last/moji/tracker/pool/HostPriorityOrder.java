@@ -18,6 +18,9 @@ package fm.last.moji.tracker.pool;
 import java.io.Serializable;
 import java.util.Comparator;
 
+/**
+ * Sort order: failed least, then least recently used
+ */
 enum HostPriorityOrder implements Comparator<ManagedTrackerHost>, Serializable {
   INSTANCE;
 
