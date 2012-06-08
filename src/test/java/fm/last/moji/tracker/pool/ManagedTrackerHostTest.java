@@ -40,7 +40,7 @@ import fm.last.moji.time.Clock;
 import fm.last.moji.tracker.pool.ManagedTrackerHost.ResetTask;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ManagerTrackerHostTest {
+public class ManagedTrackerHostTest {
 
   @Mock
   private InetSocketAddress mockAddress;
