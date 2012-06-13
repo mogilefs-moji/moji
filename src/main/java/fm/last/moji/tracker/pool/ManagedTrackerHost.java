@@ -111,7 +111,7 @@ public class ManagedTrackerHost {
       if (resetTask != null) {
         resetTask.cancel();
       }
-      log.debug("Scheduling reset of {} in {}{}(s)", new Object[] { address, hostRetryInterval,
+      log.debug("Scheduling reset of {} in {} {}", new Object[] { address, hostRetryInterval,
           hostRetryIntervalTimeUnit.name().toLowerCase() });
       resetTask = resetTaskFactory.newInstance();
       resetTimer.schedule(resetTask, hostRetryIntervalTimeUnit.toMillis(hostRetryInterval));
