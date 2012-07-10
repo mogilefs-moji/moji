@@ -17,6 +17,7 @@ package fm.last.moji.tracker.pool;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +33,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.impl.CommunicationException;
@@ -100,6 +104,46 @@ public class MultiHostTrackerPoolTest {
     when(mockManagedHost2.getLastFailed()).thenReturn(10L);
     BorrowedTracker second = (BorrowedTracker) trackerPool.getTracker();
     assertThat(second, is(mockBorrowedTracker1));
+  }
+
+  @Test
+  public void expectedTrackerIfFirstFail() throws Exception {
+    when(mockManagedHost1.getLastUsed()).thenReturn(2L);
+    when(mockManagedHost1.getLastFailed()).thenReturn(1L);
+    when(mockManagedHost2.getLastUsed()).thenReturn(2L);
+    when(mockManagedHost2.getLastFailed()).thenReturn(0L);
+    Mockito.doAnswer(new Answer() {
+
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        ManagedTrackerHost ms = (ManagedTrackerHost) invocation.getMock();
+        when(ms.getLastFailed()).thenReturn(10L);
+        return null;
+      }
+    }).when(mockManagedHost2).markAsFailed();
+
+    when(mockPool.borrowObject(mockManagedHost1)).thenReturn(mockBorrowedTracker1);
+    when(mockPool.borrowObject(mockManagedHost2)).thenThrow(new IllegalStateException());
+    try {
+      trackerPool.getTracker();
+      fail("Not throw exception");
+    } catch (CommunicationException e) {
+
+    }
+
+    BorrowedTracker first = (BorrowedTracker) trackerPool.getTracker();
+    assertThat(first, is(mockBorrowedTracker1));
+
+    BorrowedTracker second = (BorrowedTracker) trackerPool.getTracker();
+    assertThat(second, is(mockBorrowedTracker1));
+
+    // timer reset
+    when(mockManagedHost2.getLastFailed()).thenReturn(0L);
+    Mockito.doReturn(mockBorrowedTracker2).when(mockPool).borrowObject(mockManagedHost2);
+
+    BorrowedTracker third = (BorrowedTracker) trackerPool.getTracker();
+    assertThat(third, is(mockBorrowedTracker2));
+
   }
 
   @Test
