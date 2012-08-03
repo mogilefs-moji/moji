@@ -80,7 +80,8 @@ public class LocalFileSystemMoji implements Moji {
     List<MojiFile> mojiFiles = new ArrayList<MojiFile>(files.length);
     for (File file : files) {
       String key = namingStrategy.keyForFileName(file.getName());
-      mojiFiles.add(new LocalMojiFile(namingStrategy, baseFolder, domain, key));
+      String storageClass = namingStrategy.storageClassForFileName(file.getName());
+      mojiFiles.add(new LocalMojiFile(namingStrategy, baseFolder, domain, key, storageClass));
     }
     return mojiFiles;
   }
