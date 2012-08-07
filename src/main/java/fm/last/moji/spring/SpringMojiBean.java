@@ -267,9 +267,17 @@ public class SpringMojiBean implements Moji {
   }
 
   /**
+   * @deprecated Kept for backward compatibility only
+   */
+  @Deprecated
+  public void setTrackerSoTimeout(int trackerReadTimeout) {
+    setTrackerReadTimeout(trackerReadTimeout);
+  }
+
+  /**
    * Setting this value after {@link #initialise()} has been called will have no effect.
    */
-  public void setTrackerSoTimeout(int trackerReadTimeout) {
+  public void setTrackerReadTimeout(int trackerReadTimeout) {
     this.trackerReadTimeout = trackerReadTimeout;
   }
 

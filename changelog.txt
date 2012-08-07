@@ -1,3 +1,4 @@
+- setTrackerSoTimeout -> setTrackerReadTimeout in SpringMojiBean
 - fixed LocalFileSystemMoji.list() to handle storageclass properly
 
 1.2.3 (2012-06-07)
