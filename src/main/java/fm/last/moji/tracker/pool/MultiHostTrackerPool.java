@@ -93,6 +93,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
     try {
       tracker = (Tracker) pool.borrowObject(managedHost);
     } catch (Exception e) {
+      managedHost.markAsFailed();
       throw new CommunicationException(String.format("Unable connect to tracker %s", managedHost), e);
     }
     return tracker;
