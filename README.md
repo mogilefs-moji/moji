@@ -15,7 +15,7 @@ You can [download](https://github.com/lastfm/moji/downloads) a JAR file or obtai
 
 #Configuration
 ### Using plain-old-Java
-        Moji moji = new SpringMojiBean();
+        SpringMojiBean moji = new SpringMojiBean();
         bean.setAddressesCsv("192.168.0.1:7001,192.168.0.2:7001");
         bean.setDomain("testdomain");
         bean.initialise();
