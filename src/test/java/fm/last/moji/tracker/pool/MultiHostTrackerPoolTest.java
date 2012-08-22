@@ -47,7 +47,7 @@ public class MultiHostTrackerPoolTest {
   @Mock
   private NetworkingConfiguration mockNetConfig;
   @Mock
-  private GenericKeyedObjectPool mockPool;
+  private GenericKeyedObjectPool<ManagedTrackerHost, BorrowedTracker> mockPool;
   @Mock
   private ManagedTrackerHost mockManagedHost1;
   @Mock
@@ -112,7 +112,7 @@ public class MultiHostTrackerPoolTest {
     when(mockManagedHost1.getLastFailed()).thenReturn(1L);
     when(mockManagedHost2.getLastUsed()).thenReturn(2L);
     when(mockManagedHost2.getLastFailed()).thenReturn(0L);
-    Mockito.doAnswer(new Answer() {
+    Mockito.doAnswer(new Answer<Object>() {
 
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
