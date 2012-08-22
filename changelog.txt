@@ -1,3 +1,6 @@
+TBA
+- moved to Apache Commons pool commons-pool:commons-pool:1.6 (thanks @jeeZzzup)
+- Fix bug in MultiHostTrackerPool.getTracker() when host is unreachable it always tries the same host (thanks @igieon)
 - setTrackerSoTimeout -> setTrackerReadTimeout in SpringMojiBean
 - fixed LocalFileSystemMoji.list() to handle storageclass properly
 
@@ -20,7 +23,7 @@
 
 1.1.2 (2012-03-01)
 - Fixed issue with LocalMojiFile where internal file was not updated to the new destination.
-- Support for storage backend like Apache that reponses a "201 Created" instead of "200 OK"
+- Support for storage backend like Apache that responses a "201 Created" instead of "200 OK"
 
 1.1.1 (2012-01-27)
 - Now supports file_info command via MojiFile.getAttributes();

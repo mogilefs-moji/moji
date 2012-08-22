@@ -44,7 +44,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
   private static final Logger log = LoggerFactory.getLogger(MultiHostTrackerPool.class);
 
   private final NetworkingConfiguration netConfig;
-  private final GenericKeyedObjectPool pool;
+  private final GenericKeyedObjectPool<ManagedTrackerHost, BorrowedTracker> pool;
   private final List<ManagedTrackerHost> managedHosts;
 
   /**
@@ -71,8 +71,9 @@ public class MultiHostTrackerPool implements TrackerFactory {
       managedHosts.add(new ManagedTrackerHost(address));
     }
     AbstractTrackerFactory delegateTrackerFactory = new AbstractTrackerFactory(netConfig);
-    KeyedPoolableObjectFactory objectFactory = new BorrowedTrackerObjectPoolFactory(delegateTrackerFactory, this);
-    pool = new GenericKeyedObjectPool(objectFactory);
+    KeyedPoolableObjectFactory<ManagedTrackerHost, BorrowedTracker> objectFactory = new BorrowedTrackerObjectPoolFactory(
+        delegateTrackerFactory, this);
+    pool = new GenericKeyedObjectPool<ManagedTrackerHost, BorrowedTracker>(objectFactory);
     log.debug("Pool created");
   }
 
@@ -80,7 +81,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
    * For tests only
    */
   MultiHostTrackerPool(List<ManagedTrackerHost> managedHosts, NetworkingConfiguration netConfig,
-      GenericKeyedObjectPool pool) {
+      GenericKeyedObjectPool<ManagedTrackerHost, BorrowedTracker> pool) {
     this.managedHosts = managedHosts;
     this.netConfig = netConfig;
     this.pool = pool;
@@ -91,7 +92,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
     ManagedTrackerHost managedHost = nextHost();
     Tracker tracker = null;
     try {
-      tracker = (Tracker) pool.borrowObject(managedHost);
+      tracker = pool.borrowObject(managedHost);
     } catch (Exception e) {
       managedHost.markAsFailed();
       throw new CommunicationException(String.format("Unable connect to tracker %s", managedHost), e);

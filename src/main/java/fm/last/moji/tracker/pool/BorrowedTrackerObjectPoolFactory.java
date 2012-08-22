@@ -23,7 +23,7 @@ import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.impl.AbstractTrackerFactory;
 
-class BorrowedTrackerObjectPoolFactory extends BaseKeyedPoolableObjectFactory {
+class BorrowedTrackerObjectPoolFactory extends BaseKeyedPoolableObjectFactory<ManagedTrackerHost, BorrowedTracker> {
 
   private static final Logger log = LoggerFactory.getLogger(BorrowedTrackerObjectPoolFactory.class);
 
@@ -36,8 +36,8 @@ class BorrowedTrackerObjectPoolFactory extends BaseKeyedPoolableObjectFactory {
   }
 
   @Override
-  public Object makeObject(Object key) throws Exception {
-    ManagedTrackerHost host = (ManagedTrackerHost) key;
+  public BorrowedTracker makeObject(ManagedTrackerHost key) throws Exception {
+    ManagedTrackerHost host = key;
     Tracker delegateTracker = trackerFactory.newTracker(host.getAddress());
     BorrowedTracker borrowedTracker = new BorrowedTracker(host, delegateTracker, trackerPool);
     log.debug("Requested new tracker instance: {}", key);
@@ -45,8 +45,8 @@ class BorrowedTrackerObjectPoolFactory extends BaseKeyedPoolableObjectFactory {
   }
 
   @Override
-  public void destroyObject(Object key, Object value) throws Exception {
-    BorrowedTracker borrowed = (BorrowedTracker) value;
+  public void destroyObject(ManagedTrackerHost key, BorrowedTracker value) throws Exception {
+    BorrowedTracker borrowed = value;
     if (borrowed.getLastException() != null) {
       log.debug("Error occurred on tracker: {}", borrowed.getLastException().getMessage());
       borrowed.getHost().markAsFailed();
@@ -56,8 +56,8 @@ class BorrowedTrackerObjectPoolFactory extends BaseKeyedPoolableObjectFactory {
   }
 
   @Override
-  public boolean validateObject(Object key, Object value) {
-    BorrowedTracker borrowed = (BorrowedTracker) value;
+  public boolean validateObject(ManagedTrackerHost key, BorrowedTracker value) {
+    BorrowedTracker borrowed = value;
     log.debug("Validating {}", borrowed);
     try {
       borrowed.noop();
