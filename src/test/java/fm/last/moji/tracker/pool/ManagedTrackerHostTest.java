@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import fm.last.moji.time.Clock;
+import fm.last.commons.lang.time.Clock;
 import fm.last.moji.tracker.pool.ManagedTrackerHost.ResetTask;
 
 @RunWith(MockitoJUnitRunner.class)

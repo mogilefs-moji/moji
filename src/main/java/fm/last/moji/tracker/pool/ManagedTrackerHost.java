@@ -27,8 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fm.last.moji.time.Clock;
-import fm.last.moji.time.SystemClock;
+import fm.last.commons.lang.time.Clock;
 
 /**
  * Manages the status of a given tracker host. Knows when it last failed, when the last successful request occurred.
@@ -59,7 +58,7 @@ public class ManagedTrackerHost {
   }
 
   ManagedTrackerHost(InetSocketAddress address) {
-    this(address, new Timer(), SystemClock.INSTANCE);
+    this(address, new Timer(), Clock.INSTANCE);
   }
 
   /**
@@ -112,7 +111,7 @@ public class ManagedTrackerHost {
         resetTask.cancel();
       }
       log.debug("Scheduling reset of {} in {} {}", new Object[] { address, hostRetryInterval,
-          hostRetryIntervalTimeUnit.name().toLowerCase() });
+        hostRetryIntervalTimeUnit.name().toLowerCase() });
       resetTask = resetTaskFactory.newInstance();
       resetTimer.schedule(resetTask, hostRetryIntervalTimeUnit.toMillis(hostRetryInterval));
     }
