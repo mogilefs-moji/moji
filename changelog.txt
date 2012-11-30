@@ -6,7 +6,8 @@ TBA
 - fixed LocalFileSystemMoji.list() to handle storageclass properly
 
 1.2.3 (2012-06-07)
-- Integrated igieon's multitracker fixes
+- Integrated igieon's multitracker fixes.
+- Migrated project to lastfm-oss-parent.
 
 1.2.2 (2012-05-14)
 - Copyright messages.

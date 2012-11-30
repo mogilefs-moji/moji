@@ -1,11 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <groupId>fm.last</groupId>
+    <artifactId>lastfm-oss-parent</artifactId>
+    <version>1.1.0</version>
   </parent>
 
   <groupId>fm.last</groupId>
@@ -17,18 +17,10 @@
 
   <url>https://github.com/lastfm/moji</url>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
   <scm>
-    <connection>scm:git:git@github.com:lastfm/moji.git</connection>
-    <developerConnection>scm:git:git@github.com:lastfm/moji.git</developerConnection>
-    <url>git@github.com:lastfm/moji.git</url>
+    <connection>scm:git:git@github.com:lastfm/${project.artifactId}.git</connection>
+    <developerConnection>scm:git:git@github.com:lastfm/${project.artifactId}.git</developerConnection>
+    <url>https://github.com/lastfm/${project.artifactId}</url>
   </scm>
 
   <developers>
@@ -54,63 +46,36 @@
     </developer>
   </developers>
 
-  <organization>
-    <name>Last.fm</name>
-    <url>http://www.last.fm</url>
-  </organization>
-
-  <properties>
-    <downloadSources>true</downloadSources>
-    <downloadJavadocs>true</downloadJavadocs>
-    <moji.env />
-  </properties>
-
   <build>
     <filters>
-      <filter>${project.basedir}/src/test/resources/moji.properties${moji.env}</filter>
+      <filter>${project.basedir}/src/test/resources/moji.properties</filter>
     </filters>
-
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>src/main/conf</directory>
-      </resource>
-    </resources>
-
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-      </testResource>
-      <testResource>
-        <directory>src/test/conf</directory>
-      </testResource>
-      <testResource>
-        <directory>src/test/script</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.sh</include>
-        </includes>
-      </testResource>
-    </testResources>
 
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
-          <showWarnings>true</showWarnings>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>add-test-resource</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>src/test/script</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>**/*.sh</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -140,84 +105,8 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.0</version>
-      </plugin>
     </plugins>
   </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <links>
-            <link>http://commons.apache.org/pool/api-1.5.6/</link>
-          </links>
-          <detectLinks>true</detectLinks>
-          <detectJavaApiLink>true</detectJavaApiLink>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-          <formats>
-            <format>xml</format>
-            <format>html</format>
-          </formats>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <excludeFilterFile>${project.basedir}/src/test/resources/findbugsExclude.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <configLocation>${project.basedir}/src/test/resources/checkstyle.xml</configLocation>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <profiles>
-    <profile>
-      <id>hudson</id>
-      <activation>
-        <property>
-          <name>env</name>
-          <value>hudson</value>
-        </property>
-      </activation>
-      <properties>
-        <moji.env>.hudson</moji.env>
-      </properties>
-    </profile>
-  </profiles>
 
   <dependencies>
     <dependency>
@@ -270,4 +159,5 @@
       <version>1.6</version>
     </dependency>
   </dependencies>
+
 </project>
