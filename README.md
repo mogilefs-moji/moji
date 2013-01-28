@@ -2,7 +2,7 @@
 A file-like [MogileFS](http://danga.com/mogilefs/ "Danga Interactive - MogileFS") client for Java.
 
 #Start using
-You can [download](https://github.com/lastfm/moji/downloads) a JAR file or obtain Moji from Maven Central using the following identifier:
+You can obtain Moji from Maven Central using the following identifier:
 * [fm.last:moji:1.3.0](http://search.maven.org/#artifactdetails%7Cfm.last%7Cmoji%7C1.3.0%7Cjar)
 
 #Features
