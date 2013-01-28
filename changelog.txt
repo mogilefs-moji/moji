@@ -1,4 +1,4 @@
-TBA
+1.3.0 (2013-01-28)
 - Use fm.last.commons:lastcommons-lang:3.0.0 for Clock dependency
 - moved to Apache Commons pool commons-pool:commons-pool:1.6 (thanks @jeeZzzup)
 - Fix bug in MultiHostTrackerPool.getTracker() when host is unreachable it always tries the same host (thanks @igieon)
