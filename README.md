@@ -3,7 +3,7 @@ A file-like [MogileFS](http://danga.com/mogilefs/ "Danga Interactive - MogileFS"
 
 #Start using
 You can [download](https://github.com/lastfm/moji/downloads) a JAR file or obtain Moji from Maven Central using the following identifier:
-* [fm.last:moji:1.2.3](http://search.maven.org/#artifactdetails%7Cfm.last%7Cmoji%7C1.2.3%7Cjar)
+* [fm.last:moji:1.3.0](http://search.maven.org/#artifactdetails%7Cfm.last%7Cmoji%7C1.3.0%7Cjar)
 
 #Features
 * `java.io.File` like API
