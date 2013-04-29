@@ -46,7 +46,7 @@ enum HostPriorityOrder implements Comparator<ManagedTrackerHost>, Serializable {
       // has had longer to recover
       return 1;
     }
-    // 'a' failed more recently - reduce it's priority
+    // 'a' failed more recently - reduce its priority
     return -1;
   }
 
