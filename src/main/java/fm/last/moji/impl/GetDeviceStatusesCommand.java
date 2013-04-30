@@ -7,10 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fm.last.moji.MojiDeviceStatus;
 import fm.last.moji.tracker.Tracker;
 
 class GetDeviceStatusesCommand implements MojiCommand {
+
+  private static final Logger log = LoggerFactory.getLogger(GetDeviceStatusesCommand.class);
 
   private final String domain;
   private List<MojiDeviceStatus> deviceStatuses;
@@ -24,24 +29,32 @@ class GetDeviceStatusesCommand implements MojiCommand {
   public void executeWithTracker(Tracker tracker) throws IOException {
     Map<String, String> valueMap = tracker.getDeviceStatuses(domain);
     if (!valueMap.isEmpty()) {
-      Map<String, Map<String, String>> attributesByDevice = new HashMap<String, Map<String, String>>();
+      Map<String, Map<String, String>> parametersByDevice = new HashMap<String, Map<String, String>>();
       for (Map.Entry<String, String> entry : valueMap.entrySet()) {
-        String key = entry.getKey();
-        // ignoring the attribute of number of devices
-        if (!key.equalsIgnoreCase("devices")) {
-          String deviceName = key.substring(0, key.indexOf("_"));
-          String attributeName = key.substring(key.indexOf("_") + 1).toLowerCase();
-          Map<String, String> attributes = attributesByDevice.get(deviceName);
-          if (attributes == null) {
-            attributes = new HashMap<String, String>(DeviceStatusField.values().length);
-            attributesByDevice.put(deviceName, attributes);
+        String parameterName = entry.getKey();
+        boolean parameterAdded = false;
+        // ignoring the parameter of number of devices
+        if (!"devices".equalsIgnoreCase(parameterName)) {
+          int delimiterPosition = parameterName.indexOf("_");
+          if (parameterName.length() > 2 && delimiterPosition >= 0) {
+            String deviceName = parameterName.substring(0, parameterName.indexOf("_"));
+            parameterName = parameterName.substring(parameterName.indexOf("_") + 1).toLowerCase();
+            Map<String, String> parameters = parametersByDevice.get(deviceName);
+            if (parameters == null) {
+              parameters = new HashMap<String, String>(DeviceStatusField.values().length);
+              parametersByDevice.put(deviceName, parameters);
+            }
+            parameters.put(parameterName, entry.getValue());
+            parameterAdded = true;
           }
-          attributes.put(attributeName, entry.getValue());
+        }
+        if (!parameterAdded) {
+          log.debug("Ignoring attribute named: " + parameterName);
         }
       }
-      List<MojiDeviceStatus> statuses = new ArrayList<MojiDeviceStatus>(attributesByDevice.size());
-      for (Map.Entry<String, Map<String, String>> deviceAttributes : attributesByDevice.entrySet()) {
-        statuses.add(new MojiDeviceStatusImpl(deviceAttributes.getKey(), deviceAttributes.getValue()));
+      List<MojiDeviceStatus> statuses = new ArrayList<MojiDeviceStatus>(parametersByDevice.size());
+      for (Map.Entry<String, Map<String, String>> deviceParameters : parametersByDevice.entrySet()) {
+        statuses.add(new MojiDeviceStatusImpl(deviceParameters.getKey(), deviceParameters.getValue()));
       }
       deviceStatuses = Collections.unmodifiableList(statuses);
     }
