@@ -244,4 +244,16 @@ public class TrackerImplTest {
     verify(mockRequestHandler).close();
   }
 
+  @Test
+  public void deviceStatusesRequest() throws Exception {
+    Map<String, Map<String, String>> deviceStatuses = tracker.getDeviceStatuses(DOMAIN);
+
+    Request request = requestCaptor.getValue();
+    assertThat(request.getCommand(), is("get_devices"));
+    assertThat(request.getArguments().size(), is(1));
+    assertThat(request.getArguments().get("domain"), is(DOMAIN));
+
+    assertThat(deviceStatuses.isEmpty(), is(true));
+  }
+
 }
