@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import fm.last.moji.Moji;
 import fm.last.moji.MojiFile;
 import fm.last.moji.impl.DefaultMojiFactory;
+import fm.last.moji.impl.MojiDeviceStatus;
 import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.impl.InetSocketAddressFactory;
 import fm.last.moji.tracker.pool.MultiHostTrackerPool;
@@ -116,6 +117,11 @@ public class SpringMojiBean implements Moji {
   @Override
   public List<MojiFile> list(String keyPrefix, int limit) throws IOException {
     return moji.list(keyPrefix, limit);
+  }
+  
+  @Override
+  public List<MojiDeviceStatus> getDevices() {
+    return moji.getDevices();
   }
 
   /**

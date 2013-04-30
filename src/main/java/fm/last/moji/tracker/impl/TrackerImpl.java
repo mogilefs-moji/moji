@@ -131,6 +131,20 @@ class TrackerImpl implements Tracker {
       throw new TrackerException(message);
     }
   }
+  
+  @Override
+  public Map<String, String> getDevicesStatus(String domain) throws TrackerException
+  {
+    Request request = new Request.Builder(3).command("get_devices").arg("domain", domain).build();
+    Response response = requestHandler.performRequest(request);
+    if (response.getStatus() != ResponseStatus.OK) 
+    {
+      String message = response.getMessage();
+      throw new TrackerException(message);
+    }
+    
+    return response.getValueMap();
+  }
 
   @Override
   public void noop() throws TrackerException {

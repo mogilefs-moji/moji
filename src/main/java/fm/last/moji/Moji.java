@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import fm.last.moji.impl.MojiDeviceStatus;
+
 /**
  * The Moji entry point. A representation of a MogileFS domain that allows interactions with remote files.
  * <p>
@@ -80,5 +82,11 @@ public interface Moji {
    * @throws IOException If there was a problem communicating with MogileFS.
    */
   List<MojiFile> list(String keyPrefix, int limit) throws IOException;
+
+  /**
+   * Get a list of all remote MogileFS devices and their status
+   * @return A list of MogileFS device representations as pojo classes
+   */
+  List<MojiDeviceStatus> getDevices();
 
 }
