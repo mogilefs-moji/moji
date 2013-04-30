@@ -17,6 +17,7 @@ package fm.last.moji.impl;
 
 import static fm.last.moji.impl.DeviceStatusField.CAPACITY_FREE;
 import static fm.last.moji.impl.DeviceStatusField.CAPACITY_TOTAL;
+import static fm.last.moji.impl.DeviceStatusField.CAPACITY_USED;
 import static fm.last.moji.impl.DeviceStatusField.DEVICE_ID;
 import static fm.last.moji.impl.DeviceStatusField.HOST_ID;
 import static fm.last.moji.impl.DeviceStatusField.OBSERVED_STATE;
@@ -69,7 +70,7 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
 
   @Override
   public Long getCapacityUsedMb() {
-    return (Long) getValue(CAPACITY_TOTAL);
+    return (Long) getValue(CAPACITY_USED);
   }
 
   @Override
