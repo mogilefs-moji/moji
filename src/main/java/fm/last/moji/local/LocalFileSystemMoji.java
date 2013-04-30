@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 
 import fm.last.moji.Moji;
 import fm.last.moji.MojiFile;
+import fm.last.moji.impl.MojiDeviceStatus;
 
 /**
  * A simple {@link fm.last.moji.Moji Moji} implementation that uses the local filesystem for storage. This is intended
@@ -95,6 +96,11 @@ public class LocalFileSystemMoji implements Moji {
       mojiFiles.add(list.get(i));
     }
     return mojiFiles;
+  }
+  
+  @Override
+  public List<MojiDeviceStatus> getDevices() {
+    throw new UnsupportedOperationException();
   }
 
   @Override
