@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fm.last.moji.Moji;
-import fm.last.moji.MojiDevicesStatusAttributes;
+import fm.last.moji.MojiDeviceStatus;
 import fm.last.moji.MojiFile;
 import fm.last.moji.tracker.TrackerFactory;
 
@@ -97,21 +97,17 @@ class MojiImpl implements Moji {
     log.debug("list() -> {}", list);
     return list;
   }
-  
+
   @Override
-  public List<MojiDeviceStatus> getDevices()
-  {
+  public List<MojiDeviceStatus> getDeviceStatuses() {
     log.debug("getDevicesStatus : {}", this);
-    try
-    {
+    try {
       DevicesStatusCommand command = new DevicesStatusCommand(domain);
       executor.executeCommand(command);
-      MojiDevicesStatusAttributes attributes = command.getAttributes();
-      log.debug("getDevicesStatus() -> {}", attributes);
-      return attributes.getDevices();
-    }
-    catch(Exception e)
-    {
+      List<MojiDeviceStatus> statuses = command.getStatuses();
+      log.debug("getDevicesStatus() -> {}", statuses);
+      return statuses;
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }

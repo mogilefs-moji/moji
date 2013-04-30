@@ -1,0 +1,134 @@
+package fm.last.moji.impl;
+
+import static fm.last.moji.impl.DeviceStatusField.CAPACITY_FREE;
+import static fm.last.moji.impl.DeviceStatusField.CAPACITY_TOTAL;
+import static fm.last.moji.impl.DeviceStatusField.DEVICE_ID;
+import static fm.last.moji.impl.DeviceStatusField.HOST_ID;
+import static fm.last.moji.impl.DeviceStatusField.OBSERVED_STATE;
+import static fm.last.moji.impl.DeviceStatusField.REJECT_BAD_MD5;
+import static fm.last.moji.impl.DeviceStatusField.STATUS;
+import static fm.last.moji.impl.DeviceStatusField.UTILIZATION;
+import static fm.last.moji.impl.DeviceStatusField.WEIGHT;
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fm.last.moji.MojiDeviceStatus;
+
+class MojiDeviceStatusImpl implements MojiDeviceStatus {
+
+  private static final Logger log = LoggerFactory.getLogger(MojiDeviceStatusImpl.class);
+
+  private final Map<String, String> valueMap;
+  private final String deviceName;
+
+  MojiDeviceStatusImpl(String deviceName, Map<String, String> valueMap) {
+    this.deviceName = deviceName;
+    this.valueMap = valueMap;
+  }
+
+  /**
+   * Percentage of utilization in float of scale .00
+   */
+  @Override
+  public Float getUtilization() {
+    return (Float) getValue(UTILIZATION);
+  }
+
+  @Override
+  public String getObservedState() {
+    return (String) getValue(OBSERVED_STATE);
+  }
+
+  @Override
+  public Long getCapacityTotalMb() {
+    return (Long) getValue(CAPACITY_TOTAL);
+  }
+
+  @Override
+  public Boolean getRejectBadMd5() {
+    return (Boolean) getValue(REJECT_BAD_MD5);
+  }
+
+  @Override
+  public Long getCapacityUsedMb() {
+    return (Long) getValue(CAPACITY_TOTAL);
+  }
+
+  @Override
+  public Integer getWeight() {
+    return (Integer) getValue(WEIGHT);
+  }
+
+  @Override
+  public Integer getId() {
+    return (Integer) getValue(DEVICE_ID);
+  }
+
+  @Override
+  public String getStatus() {
+    return (String) getValue(STATUS);
+  }
+
+  @Override
+  public Integer getHostId() {
+    return (Integer) getValue(HOST_ID);
+  }
+
+  @Override
+  public String getDeviceName() {
+    return deviceName;
+  }
+
+  @Override
+  public Long getCapacityFreeMb() {
+    return (Long) getValue(CAPACITY_FREE);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder(deviceName);
+    builder.append('[');
+    boolean first = true;
+    for (DeviceStatusField field : DeviceStatusField.values()) {
+      if (first) {
+        first = false;
+      } else {
+        builder.append(',');
+      }
+      builder.append(field);
+      builder.append('=');
+      builder.append(getValue(field));
+    }
+    builder.append(']');
+    return builder.toString();
+  }
+
+  private Object getValue(DeviceStatusField field) {
+    String value = valueMap.get(field.getFieldName());
+    if (value == null) {
+      log.debug("Field " + field + " not present in status response.");
+      return null;
+    }
+    Class<?> destinationType = field.getDestinationType();
+    try {
+      if (destinationType == String.class) {
+        return value;
+      } else if (destinationType == Float.class) {
+        return Float.parseFloat(value);
+      } else if (destinationType == Long.class) {
+        return Long.parseLong(value);
+      } else if (destinationType == Integer.class) {
+        return Integer.parseInt(value);
+      } else if (destinationType == Boolean.class) {
+        return Integer.parseInt(value) > 0;
+      }
+    } catch (NumberFormatException e) {
+      log.error("Could not convert " + field + " field value to " + destinationType + ": " + value, e);
+    }
+    throw new IllegalStateException("Unknown conversion type " + destinationType + " for field: " + field);
+  }
+
+}

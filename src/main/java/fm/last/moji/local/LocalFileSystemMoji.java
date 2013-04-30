@@ -18,13 +18,14 @@ package fm.last.moji.local;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import fm.last.moji.Moji;
+import fm.last.moji.MojiDeviceStatus;
 import fm.last.moji.MojiFile;
-import fm.last.moji.impl.MojiDeviceStatus;
 
 /**
  * A simple {@link fm.last.moji.Moji Moji} implementation that uses the local filesystem for storage. This is intended
@@ -97,10 +98,13 @@ public class LocalFileSystemMoji implements Moji {
     }
     return mojiFiles;
   }
-  
+
+  /**
+   * Always returns an empty list.
+   */
   @Override
-  public List<MojiDeviceStatus> getDevices() {
-    throw new UnsupportedOperationException();
+  public List<MojiDeviceStatus> getDeviceStatuses() {
+    return Collections.emptyList();
   }
 
   @Override
