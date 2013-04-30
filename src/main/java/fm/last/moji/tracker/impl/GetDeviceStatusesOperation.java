@@ -24,7 +24,7 @@ class GetDeviceStatusesOperation {
   }
 
   public void execute() throws TrackerException {
-    Request request = new Request.Builder(3).command("get_devices").arg("domain", domain).build();
+    Request request = new Request.Builder(2).command("get_devices").arg("domain", domain).build();
     Response response = requestHandler.performRequest(request);
     if (response.getStatus() != ResponseStatus.OK) {
       String message = response.getMessage();
