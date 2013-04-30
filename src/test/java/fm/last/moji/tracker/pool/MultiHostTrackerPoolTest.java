@@ -53,21 +53,22 @@ public class MultiHostTrackerPoolTest {
   @Mock
   private ManagedTrackerHost mockManagedHost2;
   @Mock
-  private InetSocketAddress mockAddress1;
-  @Mock
-  private InetSocketAddress mockAddress2;
-  @Mock
   private BorrowedTracker mockBorrowedTracker1;
   @Mock
   private BorrowedTracker mockBorrowedTracker2;
 
   private MultiHostTrackerPool trackerPool;
   private List<ManagedTrackerHost> managedHosts;
+  private InetSocketAddress address1;
+  private InetSocketAddress address2;
 
   @Before
   public void setup() {
-    when(mockManagedHost1.getAddress()).thenReturn(mockAddress1);
-    when(mockManagedHost2.getAddress()).thenReturn(mockAddress2);
+    address1 = new InetSocketAddress(10001);
+    address2 = new InetSocketAddress(10002);
+
+    when(mockManagedHost1.getAddress()).thenReturn(address1);
+    when(mockManagedHost2.getAddress()).thenReturn(address2);
     managedHosts = Arrays.asList(mockManagedHost1, mockManagedHost2);
 
     when(mockBorrowedTracker1.getHost()).thenReturn(mockManagedHost1);
@@ -84,7 +85,7 @@ public class MultiHostTrackerPoolTest {
   @Test
   public void getAddresses() {
     Set<InetSocketAddress> actual = trackerPool.getAddresses();
-    Set<InetSocketAddress> expected = new HashSet<InetSocketAddress>(Arrays.asList(mockAddress1, mockAddress2));
+    Set<InetSocketAddress> expected = new HashSet<InetSocketAddress>(Arrays.asList(address1, address2));
     assertThat(actual, is(expected));
   }
 
