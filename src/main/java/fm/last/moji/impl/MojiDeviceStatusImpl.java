@@ -126,7 +126,7 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
         return Integer.parseInt(value) > 0;
       }
     } catch (NumberFormatException e) {
-      log.error("Could not convert " + field + " field value to " + destinationType + ": " + value, e);
+      log.warn("Could not convert " + field + " field value to " + destinationType + ": " + value, e);
     }
     throw new IllegalStateException("Unknown conversion type " + destinationType + " for field: " + field);
   }
