@@ -57,14 +57,14 @@ class GetDeviceStatusesOperation {
     if (!valueMap.isEmpty()) {
       parametersByDevice = new HashMap<String, Map<String, String>>();
       for (Map.Entry<String, String> entry : valueMap.entrySet()) {
-        String parameterName = entry.getKey();
+        String parameterName = entry.getKey().toLowerCase();
         boolean parameterAdded = false;
         // ignoring the parameter of number of devices
         if (!"devices".equalsIgnoreCase(parameterName)) {
           int delimiterPosition = parameterName.indexOf('_');
           if (parameterName.length() > 2 && delimiterPosition >= 0) {
             String deviceName = parameterName.substring(0, delimiterPosition);
-            parameterName = parameterName.substring(delimiterPosition + 1).toLowerCase();
+            parameterName = parameterName.substring(delimiterPosition + 1);
             Map<String, String> parameters = parametersByDevice.get(deviceName);
             if (parameters == null) {
               parameters = new HashMap<String, String>();
