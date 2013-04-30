@@ -151,10 +151,10 @@ class BorrowedTracker implements Tracker {
   }
   
   @Override
-  public Map<String, String> getDevicesStatuses(String domain) throws TrackerException {
+  public Map<String, String> getDeviceStatuses(String domain) throws TrackerException {
     Map<String, String> valueMap = Collections.emptyMap();
     try {
-      valueMap = delegate.getDevicesStatuses(domain);
+      valueMap = delegate.getDeviceStatuses(domain);
       host.markSuccess();
     } catch (CommunicationException e) {
       lastException = e;

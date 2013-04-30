@@ -89,6 +89,6 @@ public interface Tracker {
    * @return A list of attributes of all devices
    * @throws TrackerException
    */
-  public Map<String, String> getDevicesStatuses(String domain) throws TrackerException;
+  public Map<String, String> getDeviceStatuses(String domain) throws TrackerException;
 
 }

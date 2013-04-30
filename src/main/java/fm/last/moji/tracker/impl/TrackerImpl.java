@@ -133,7 +133,7 @@ class TrackerImpl implements Tracker {
   }
 
   @Override
-  public Map<String, String> getDevicesStatuses(String domain) throws TrackerException {
+  public Map<String, String> getDeviceStatuses(String domain) throws TrackerException {
     Request request = new Request.Builder(3).command("get_devices").arg("domain", domain).build();
     Response response = requestHandler.performRequest(request);
     if (response.getStatus() != ResponseStatus.OK) {

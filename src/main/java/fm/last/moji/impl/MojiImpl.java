@@ -102,7 +102,7 @@ class MojiImpl implements Moji {
   public List<MojiDeviceStatus> getDeviceStatuses() {
     log.debug("getDevicesStatus : {}", this);
     try {
-      DevicesStatusCommand command = new DevicesStatusCommand(domain);
+      GetDeviceStatusesCommand command = new GetDeviceStatusesCommand(domain);
       executor.executeCommand(command);
       List<MojiDeviceStatus> statuses = command.getStatuses();
       log.debug("getDevicesStatus() -> {}", statuses);

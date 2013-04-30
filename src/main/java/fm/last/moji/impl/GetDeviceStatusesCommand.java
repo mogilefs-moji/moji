@@ -10,19 +10,19 @@ import java.util.Map;
 import fm.last.moji.MojiDeviceStatus;
 import fm.last.moji.tracker.Tracker;
 
-class DevicesStatusCommand implements MojiCommand {
+class GetDeviceStatusesCommand implements MojiCommand {
 
   private final String domain;
   private List<MojiDeviceStatus> deviceStatuses;
 
-  DevicesStatusCommand(String domain) {
+  GetDeviceStatusesCommand(String domain) {
     this.domain = domain;
     deviceStatuses = Collections.emptyList();
   }
 
   @Override
   public void executeWithTracker(Tracker tracker) throws IOException {
-    Map<String, String> valueMap = tracker.getDevicesStatuses(domain);
+    Map<String, String> valueMap = tracker.getDeviceStatuses(domain);
     if (!valueMap.isEmpty()) {
       Map<String, Map<String, String>> attributesByDevice = new HashMap<String, Map<String, String>>();
       for (Map.Entry<String, String> entry : valueMap.entrySet()) {
@@ -49,6 +49,17 @@ class DevicesStatusCommand implements MojiCommand {
 
   List<MojiDeviceStatus> getStatuses() {
     return deviceStatuses;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("GetDeviceStatusesCommand [domain=");
+    builder.append(domain);
+    builder.append(", deviceStatuses=");
+    builder.append(deviceStatuses);
+    builder.append("]");
+    return builder.toString();
   }
 
 }
