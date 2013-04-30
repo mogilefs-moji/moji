@@ -23,6 +23,7 @@ import static fm.last.moji.tracker.impl.ResponseStatus.OK;
 
 import java.net.Socket;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,14 +134,40 @@ class TrackerImpl implements Tracker {
   }
 
   @Override
-  public Map<String, String> getDeviceStatuses(String domain) throws TrackerException {
+  public Map<String, Map<String, String>> getDeviceStatuses(String domain) throws TrackerException {
     Request request = new Request.Builder(3).command("get_devices").arg("domain", domain).build();
     Response response = requestHandler.performRequest(request);
     if (response.getStatus() != ResponseStatus.OK) {
       String message = response.getMessage();
       throw new TrackerException(message);
     }
-    return response.getValueMap();
+    Map<String, Map<String, String>> parametersByDevice = new HashMap<String, Map<String, String>>();
+    Map<String, String> valueMap = response.getValueMap();
+    if (!valueMap.isEmpty()) {
+      for (Map.Entry<String, String> entry : valueMap.entrySet()) {
+        String parameterName = entry.getKey();
+        boolean parameterAdded = false;
+        // ignoring the parameter of number of devices
+        if (!"devices".equalsIgnoreCase(parameterName)) {
+          int delimiterPosition = parameterName.indexOf('_');
+          if (parameterName.length() > 2 && delimiterPosition >= 0) {
+            String deviceName = parameterName.substring(0, delimiterPosition);
+            parameterName = parameterName.substring(delimiterPosition + 1).toLowerCase();
+            Map<String, String> parameters = parametersByDevice.get(deviceName);
+            if (parameters == null) {
+              parameters = new HashMap<String, String>();
+              parametersByDevice.put(deviceName, parameters);
+            }
+            parameters.put(parameterName, entry.getValue());
+            parameterAdded = true;
+          }
+        }
+        if (!parameterAdded) {
+          log.debug("Ignoring parameter named: " + parameterName);
+        }
+      }
+    }
+    return parametersByDevice;
   }
 
   @Override

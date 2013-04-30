@@ -81,14 +81,14 @@ public interface Tracker {
    * @throws TrackerException If there was a problem matching.
    */
   List<String> list(String domain, String keyPrefix, Integer limit) throws TrackerException;
-  
+
   /**
-   * Get a list of attributes in key value format that describe each device
+   * Get a list of parameters in key value format that describe each device
    * 
-   * @param domain The domain from which to bring the devices
-   * @return A list of attributes of all devices
+   * @param domain The domain in which to query the devices
+   * @return A list of parameters by device
    * @throws TrackerException
    */
-  public Map<String, String> getDeviceStatuses(String domain) throws TrackerException;
+  public Map<String, Map<String, String>> getDeviceStatuses(String domain) throws TrackerException;
 
 }
