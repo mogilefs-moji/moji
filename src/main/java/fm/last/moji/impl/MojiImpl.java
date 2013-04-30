@@ -99,17 +99,13 @@ class MojiImpl implements Moji {
   }
 
   @Override
-  public List<MojiDeviceStatus> getDeviceStatuses() {
+  public List<MojiDeviceStatus> getDeviceStatuses() throws IOException {
     log.debug("getDevicesStatus : {}", this);
-    try {
-      GetDeviceStatusesCommand command = new GetDeviceStatusesCommand(domain);
-      executor.executeCommand(command);
-      List<MojiDeviceStatus> statuses = command.getStatuses();
-      log.debug("getDevicesStatus() -> {}", statuses);
-      return statuses;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    GetDeviceStatusesCommand command = new GetDeviceStatusesCommand(domain);
+    executor.executeCommand(command);
+    List<MojiDeviceStatus> statuses = command.getStatuses();
+    log.debug("getDevicesStatus() -> {}", statuses);
+    return statuses;
   }
 
   @Override

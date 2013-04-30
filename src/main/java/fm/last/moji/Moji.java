@@ -84,8 +84,9 @@ public interface Moji {
   /**
    * Get a list of all remote MogileFS devices and their status
    * 
-   * @return A list of MogileFS device representations as pojo classes
+   * @return A list of MogileFS device status representations
+   * @throws IOException
    */
-  List<MojiDeviceStatus> getDeviceStatuses();
+  List<MojiDeviceStatus> getDeviceStatuses() throws IOException;
 
 }

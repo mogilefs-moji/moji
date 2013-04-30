@@ -120,7 +120,7 @@ public class SpringMojiBean implements Moji {
   }
 
   @Override
-  public List<MojiDeviceStatus> getDeviceStatuses() {
+  public List<MojiDeviceStatus> getDeviceStatuses() throws IOException {
     return moji.getDeviceStatuses();
   }
 
