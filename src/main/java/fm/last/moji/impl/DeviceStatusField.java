@@ -31,12 +31,12 @@ enum DeviceStatusField {
   private final Class<?> destinationType;
 
   private DeviceStatusField(String fieldName, Class<?> destinationType) {
-    this.fieldName = fieldName;
+    this.fieldName = fieldName.toLowerCase();
     this.destinationType = destinationType;
   }
 
   String getFieldName() {
-    return fieldName.toLowerCase();
+    return fieldName;
   }
 
   Class<?> getDestinationType() {
