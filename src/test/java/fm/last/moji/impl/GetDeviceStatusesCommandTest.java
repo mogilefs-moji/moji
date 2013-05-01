@@ -84,9 +84,9 @@ public class GetDeviceStatusesCommandTest {
     assertThat(statuses.size(), is(2));
 
     MojiDeviceStatus device1Status = statuses.get(0);
-    assertThat(device1Status.getCapacityFreeMb(), is(49L));
-    assertThat(device1Status.getCapacityTotalMb(), is(100L));
-    assertThat(device1Status.getCapacityUsedMb(), is(51L));
+    assertThat(device1Status.getCapacityFreeBytes(), is(51380224L));
+    assertThat(device1Status.getCapacityTotalBytes(), is(104857600L));
+    assertThat(device1Status.getCapacityUsedBytes(), is(53477376L));
     assertThat(device1Status.getDeviceName(), is("dev1"));
     assertThat(device1Status.getHostId(), is(4));
     assertThat(device1Status.getId(), is(1));
@@ -97,9 +97,9 @@ public class GetDeviceStatusesCommandTest {
     assertThat(device1Status.getWeight(), is(10));
 
     MojiDeviceStatus device2Status = statuses.get(1);
-    assertThat(device2Status.getCapacityFreeMb(), is(149L));
-    assertThat(device2Status.getCapacityTotalMb(), is(200L));
-    assertThat(device2Status.getCapacityUsedMb(), is(51L));
+    assertThat(device2Status.getCapacityFreeBytes(), is(156237824L));
+    assertThat(device2Status.getCapacityTotalBytes(), is(209715200L));
+    assertThat(device2Status.getCapacityUsedBytes(), is(53477376L));
     assertThat(device2Status.getDeviceName(), is("dev2"));
     assertThat(device2Status.getHostId(), is(8));
     assertThat(device2Status.getId(), is(2));

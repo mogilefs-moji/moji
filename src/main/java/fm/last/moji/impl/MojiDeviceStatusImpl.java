@@ -31,6 +31,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fm.last.commons.lang.units.IecByteUnit;
 import fm.last.moji.MojiDeviceStatus;
 
 class MojiDeviceStatusImpl implements MojiDeviceStatus {
@@ -59,18 +60,35 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
   }
 
   @Override
-  public Long getCapacityTotalMb() {
-    return (Long) getValue(CAPACITY_TOTAL);
-  }
-
-  @Override
   public Boolean getRejectBadMd5() {
     return (Boolean) getValue(REJECT_BAD_MD5);
   }
 
   @Override
-  public Long getCapacityUsedMb() {
-    return (Long) getValue(CAPACITY_USED);
+  public Long getCapacityUsedBytes() {
+    Long used = (Long) getValue(CAPACITY_USED);
+    if (used == null) {
+      return null;
+    }
+    return IecByteUnit.MEBIBYTES.toBytes(used);
+  }
+
+  @Override
+  public Long getCapacityFreeBytes() {
+    Long free = (Long) getValue(CAPACITY_FREE);
+    if (free == null) {
+      return null;
+    }
+    return IecByteUnit.MEBIBYTES.toBytes(free);
+  }
+
+  @Override
+  public Long getCapacityTotalBytes() {
+    Long total = (Long) getValue(CAPACITY_TOTAL);
+    if (total == null) {
+      return null;
+    }
+    return IecByteUnit.MEBIBYTES.toBytes(total);
   }
 
   @Override
@@ -96,11 +114,6 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
   @Override
   public String getDeviceName() {
     return deviceName;
-  }
-
-  @Override
-  public Long getCapacityFreeMb() {
-    return (Long) getValue(CAPACITY_FREE);
   }
 
   @Override

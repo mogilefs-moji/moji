@@ -17,7 +17,7 @@ package fm.last.moji;
 
 public interface MojiDeviceStatus {
 
-  Long getCapacityFreeMb();
+  Long getCapacityFreeBytes();
 
   String getDeviceName();
 
@@ -29,11 +29,11 @@ public interface MojiDeviceStatus {
 
   Integer getWeight();
 
-  Long getCapacityUsedMb();
+  Long getCapacityUsedBytes();
 
   Boolean getRejectBadMd5();
 
-  Long getCapacityTotalMb();
+  Long getCapacityTotalBytes();
 
   String getObservedState();
 
