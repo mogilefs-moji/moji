@@ -64,6 +64,9 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
     return (Boolean) getValue(REJECT_BAD_MD5);
   }
 
+  /**
+   * Converted from mebibytes - will always be a multiple of 1048576.
+   */
   @Override
   public Long getCapacityUsedBytes() {
     Long used = (Long) getValue(CAPACITY_USED);
@@ -73,6 +76,9 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
     return IecByteUnit.MEBIBYTES.toBytes(used);
   }
 
+  /**
+   * Converted from mebibytes - will always be a multiple of 1048576.
+   */
   @Override
   public Long getCapacityFreeBytes() {
     Long free = (Long) getValue(CAPACITY_FREE);
@@ -82,6 +88,9 @@ class MojiDeviceStatusImpl implements MojiDeviceStatus {
     return IecByteUnit.MEBIBYTES.toBytes(free);
   }
 
+  /**
+   * Converted from mebibytes - will always be a multiple of 1048576.
+   */
   @Override
   public Long getCapacityTotalBytes() {
     Long total = (Long) getValue(CAPACITY_TOTAL);
