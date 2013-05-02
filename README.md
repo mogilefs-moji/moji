@@ -7,7 +7,7 @@ You can obtain Moji from Maven Central using the following identifier:
 
 #Features
 * `java.io.File` like API
-* Supports streams of unknown length
+* Supports writing streams of unknown length
 * Unit/Integration tests
 * Spring friendly
 * Tracker connection pooling with balancing between hosts and strategies for dealing with failed nodes
