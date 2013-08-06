@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerFactory;
+import fm.last.moji.tracker.impl.CommunicationException;
 
 class FileUploadOutputStream extends OutputStream {
 
@@ -104,15 +105,38 @@ class FileUploadOutputStream extends OutputStream {
       }
     } finally {
       log.debug("Bytes written: {}", size);
-      Tracker tracker = trackerFactory.getTracker();
+      Tracker tracker = null;
+      CommunicationException lastException = null;
+      int maxAttempts = trackerFactory.getAddresses().size();
+      boolean ok = false;
       try {
-        tracker.createClose(key, domain, destination, size);
-      } finally {
-        try {
-          tracker.close();
-        } finally {
-          unlockQuietly(writeLock);
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+          try {
+            tracker = trackerFactory.getTracker();
+            log.debug("executing createClose {},{}", key, domain);
+            if (maxAttempts > 1) {
+              log.debug("Attempt #{}", attempt);
+            }
+            tracker.createClose(key, domain, destination, size);
+            ok = true;
+          } catch (CommunicationException e) {
+            lastException = e;
+          } finally {
+            if (tracker != null) {
+
+              tracker.close();
+            }
+          }
         }
+      } finally {
+        unlockQuietly(writeLock);
+      }
+      if (!ok) {
+        if (maxAttempts > 1) {
+          log.debug("All {} attempts failed", maxAttempts);
+        }
+
+        throw lastException;
       }
     }
   }
