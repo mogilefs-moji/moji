@@ -23,17 +23,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fm.last.moji.impl.NetworkingConfiguration;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
 import fm.last.moji.tracker.impl.AbstractTrackerFactory;
 import fm.last.moji.tracker.impl.CommunicationException;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link fm.last.moji.tracker.TrackerFactory TrackerFactory} implementation that provides a
@@ -229,12 +228,9 @@ public class MultiHostTrackerPool implements TrackerFactory {
   }
 
   private ManagedTrackerHost nextHost() throws TrackerException {
-    ManagedTrackerHost managedHost = null;
-    synchronized (managedHosts) {
-      Collections.sort(managedHosts, HostPriorityOrder.INSTANCE);
-      managedHost = managedHosts.get(managedHosts.size() - 1);
-    }
-    return managedHost;
+
+    return Collections.max(managedHosts, HostPriorityOrder.INSTANCE);
+
   }
 
 }
