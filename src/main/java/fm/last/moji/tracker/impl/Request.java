@@ -15,19 +15,19 @@
  */
 package fm.last.moji.tracker.impl;
 
-import static fm.last.moji.tracker.impl.Charsets.UTF_8;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static fm.last.moji.tracker.impl.Charsets.UTF_8;
 
 class Request {
 
@@ -91,7 +91,7 @@ class Request {
     private String command;
 
     Builder(int expectedSize) {
-      arguments = new HashMap<String, String>(expectedSize);
+      arguments = new LinkedHashMap<String, String>(expectedSize);
     }
 
     Builder command(String command) {
