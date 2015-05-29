@@ -62,7 +62,7 @@ class FileDownloadInputStream extends InputStream {
 
   @Override
   public void close() throws IOException {
-    log.debug("Read {} bytes", delegate.getCount());
+    log.debug("Read {} bytes", delegate.getByteCount());
     try {
       delegate.close();
     } finally {
