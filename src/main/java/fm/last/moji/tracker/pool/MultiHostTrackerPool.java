@@ -229,12 +229,7 @@ public class MultiHostTrackerPool implements TrackerFactory {
   }
 
   private ManagedTrackerHost nextHost() throws TrackerException {
-    ManagedTrackerHost managedHost = null;
-    synchronized (managedHosts) {
-      Collections.sort(managedHosts, HostPriorityOrder.INSTANCE);
-      managedHost = managedHosts.get(managedHosts.size() - 1);
-    }
-    return managedHost;
+    return Collections.max(managedHosts, HostPriorityOrder.INSTANCE);
   }
 
 }
