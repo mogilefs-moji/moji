@@ -102,6 +102,12 @@ class FileLengthCommand implements MojiCommand {
     long length = 0;
     String rawLength = httpConnection.getHeaderField("Content-Length");
 
+    // Some webdav server, e.g., apache, does not return content-length header when the file size is zero
+    if(rawLength == null) {
+      log.debug("No Content-Length header found, assume the length is 0");
+      return 0;
+    }
+
     try {
       length = Long.parseLong(rawLength);
     } catch (NumberFormatException e) {
