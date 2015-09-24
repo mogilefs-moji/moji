@@ -143,14 +143,11 @@ MogileFS integration test properties config:
 #Building
 This project uses the [Maven](http://maven.apache.org/) build system.
 
-#Further work
-We plan to support the [Java 7 FileSystem abstraction](http://openjdk.java.net/projects/nio/ "OpenJDK: NIO") now it's been officially released.
-
 #Contributing
 All contributions are welcome. Please use the [Last.fm codeformatting profile](https://github.com/lastfm/lastfm-oss-config/blob/master/src/main/resources/fm/last/last.fm.eclipse-codeformatter-profile.xml) found in the `lastfm-oss-config` project for formatting your changes.
 
 #Legal
-Copyright 2012 [Last.fm](http://www.last.fm/)
+Copyright 2012-2015 [Last.fm](http://www.last.fm/) & The "mogilefs-moji" committers.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
