@@ -14,12 +14,12 @@
   <name>Moji</name>
   <description>A File-like MogileFS client</description>
 
-  <url>https://github.com/lastfm/moji</url>
+  <url>https://github.com/mogilefs-moji/moji/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:lastfm/${project.artifactId}.git</connection>
-    <developerConnection>scm:git:git@github.com:lastfm/${project.artifactId}.git</developerConnection>
-    <url>https://github.com/lastfm/${project.artifactId}</url>
+    <connection>scm:git:git@github.mogilefs-moji/${project.artifactId}.git</connection>
+    <developerConnection>scm:git:git@github.mogilefs-moji/${project.artifactId}.git</developerConnection>
+    <url>https://github.com/mogilefs-moji/${project.artifactId}</url>
   </scm>
 
   <developers>
