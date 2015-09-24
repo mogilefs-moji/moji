@@ -20,6 +20,7 @@
     <connection>scm:git:git@github.mogilefs-moji/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.mogilefs-moji/${project.artifactId}.git</developerConnection>
     <url>https://github.com/mogilefs-moji/${project.artifactId}</url>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
