@@ -1,5 +1,11 @@
 TBA
-- Started to merge @kazabubu/@orgerson's device status implementation
+
+1.4.1 (2015-05-29)
+- Fix to prevent ConcurrentModificationException (thanks @jyukutyo)
+- Fixed int overflow for files >2GB (thanks @hrchu)
+
+1.4.0 (2013-05-01)
+- Added @kazabubu/@orgerson's device status implementation
 
 1.3.0 (2013-01-28)
 - Use fm.last.commons:lastcommons-lang:3.0.0 for Clock dependency
