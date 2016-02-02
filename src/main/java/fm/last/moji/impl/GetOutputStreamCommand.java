@@ -62,7 +62,7 @@ class GetOutputStreamCommand implements MojiCommand {
     for (Destination destination : destinations) {
       log.debug("Creating output stream to: {}", destination);
       try {
-        stream = new FileUploadOutputStream(trackerFactory, httpFactory, key, domain, destinations.get(0), writeLock);
+        stream = new FileUploadOutputStream(trackerFactory, httpFactory, key, domain, destination, writeLock);
         return;
       } catch (IOException e) {
         log.debug("Failed to open output -> {}", destination);
