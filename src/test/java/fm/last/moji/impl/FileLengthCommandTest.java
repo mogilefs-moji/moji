@@ -68,6 +68,16 @@ public class FileLengthCommandTest {
   }
 
   @Test
+  public void noContentLengthHeader() throws Exception {
+    when(mockHttpConnection.getHeaderField("Content-Length")).thenReturn(null);
+    when(mockTracker.getPaths("key", "domain")).thenReturn(Collections.singletonList(url1));
+    command.executeWithTracker(mockTracker);
+
+    assertEquals(0, command.getLength());
+    verify(mockHttpConnection).disconnect();
+  }
+
+  @Test
   public void fileSizeExceedsInt() throws Exception {
     when(mockHttpConnection.getHeaderField("Content-Length")).thenReturn("2147483648");
     when(mockTracker.getPaths("key", "domain")).thenReturn(Collections.singletonList(url1));
