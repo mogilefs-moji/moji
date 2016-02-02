@@ -1,5 +1,9 @@
 TBA
 
+1.4.2 (2016-02-01)
+- File size defaults to zero if no content-length header is returned (https://github.com/mogilefs-moji/moji/pull/16)
+- Try multiple remote destinations when performing tracker operations (instead of only the first one) (https://github.com/mogilefs-moji/moji/pull/19).
+
 1.4.1 (2015-05-29)
 - Fix to prevent ConcurrentModificationException (thanks @jyukutyo)
 - Fixed int overflow for files >2GB (thanks @hrchu)
