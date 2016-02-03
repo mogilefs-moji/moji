@@ -1,6 +1,6 @@
 TBA
 
-1.4.2 (2016-02-01)
+1.4.2 (2016-02-03)
 - File size defaults to zero if no content-length header is returned (https://github.com/mogilefs-moji/moji/pull/16)
 - Try multiple remote destinations when performing tracker operations (instead of only the first one) (https://github.com/mogilefs-moji/moji/pull/19).
 
