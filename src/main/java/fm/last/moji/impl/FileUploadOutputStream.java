@@ -16,10 +16,12 @@
 package fm.last.moji.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.concurrent.locks.Lock;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,12 +92,17 @@ class FileUploadOutputStream extends OutputStream {
           delegate.close();
         } finally {
           try {
-            String message = httpConnection.getResponseMessage();
             int code = httpConnection.getResponseCode();
             if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
-              throw new IOException(code + " " + message);
-            } else {
-              log.debug("Status: HTTP {} - {}", code, message);
+              InputStream is;
+              if (200 <= httpConnection.getResponseCode() && httpConnection.getResponseCode() <= 299) {
+                is = httpConnection.getInputStream();
+              } else {
+                is = httpConnection.getErrorStream();
+              }
+              String body = IOUtils.toString(is);
+              String message = httpConnection.getResponseMessage();
+              throw new IOException(code + " " + message + " peer: '{" + httpConnection + "}'" + " body: '{" + body + "}'");
             }
           } finally {
             httpConnection.disconnect();
