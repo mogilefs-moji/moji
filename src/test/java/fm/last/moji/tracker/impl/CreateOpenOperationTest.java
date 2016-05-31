@@ -140,12 +140,12 @@ public class CreateOpenOperationTest {
 
     Destination destination1 = destinations.get(0);
     assertThat(destination1.getDevId(), is(1));
-    assertThat(destination1.getFid(), is(5));
+    assertThat(destination1.getFid(), is(5L));
     assertThat(destination1.getPath(), is(new URL(PATH_1)));
 
     Destination destination2 = destinations.get(1);
     assertThat(destination2.getDevId(), is(2));
-    assertThat(destination2.getFid(), is(5));
+    assertThat(destination2.getFid(), is(5L));
     assertThat(destination2.getPath(), is(new URL(PATH_2)));
   }
 
