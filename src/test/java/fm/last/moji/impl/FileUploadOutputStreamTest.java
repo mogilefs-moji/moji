@@ -112,8 +112,6 @@ public class FileUploadOutputStreamTest {
     verify(mockOutputStream).flush();
     verify(mockOutputStream).close();
     verify(mockHttpConnection).disconnect();
-    verify(mockTracker).createClose(KEY, DOMAIN, mockDestination, -1);
-    verify(mockTracker).close();
     verify(mockWriteLock).unlock();
   }
 

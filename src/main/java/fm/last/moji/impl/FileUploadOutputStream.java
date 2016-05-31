@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.concurrent.locks.Lock;
 
+import fm.last.moji.tracker.TrackerException;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,40 +81,62 @@ class FileUploadOutputStream extends OutputStream {
   @Override
   public void close() throws IOException {
     log.debug("Close called on {}", this);
-    long size = -1L;
+
     try {
+      // Step 1. finish data writing to store node
+      long size = -1L;
       try {
         delegate.flush();
         size = delegate.getByteCount();
+        log.debug("Bytes written: {}", size);
+
+        String message = httpConnection.getResponseMessage();
+        int code = httpConnection.getResponseCode();
+        if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
+          throw new IOException(code + " " + message);
+        }
       } finally {
         try {
           delegate.close();
+        } catch (Exception e) {
+          log.warn("Cannot close stream", e);
+        }
+        try {
+          httpConnection.disconnect();
+        } catch (Exception e) {
+          log.warn("Cannot close connection", e);
+        }
+      }
+
+      // Step 2. send create_close to tracker
+      /*
+         Fixed the maxAttempts = 2 so the behavior is just retry once. If there are only one
+         tracker, it gives the tracker a chance again; If there are dozens of tracker, it just try
+         another tracker a time, but does not waste time to try all trackers.
+       */
+      int maxAttempts = 2;
+      TrackerException lastException = null;
+      for (int attempt = 0; attempt < maxAttempts; attempt++) {
+        Tracker tracker = null;
+        try {
+          tracker = trackerFactory.getTracker();
+          tracker.createClose(key, domain, destination, size);
+          return;
+        } catch (TrackerException e) {
+          lastException = e;
+          log.warn("create_close attempts #{} failed", attempt);
         } finally {
-          try {
-            String message = httpConnection.getResponseMessage();
-            int code = httpConnection.getResponseCode();
-            if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
-              throw new IOException(code + " " + message);
-            } else {
-              log.debug("Status: HTTP {} - {}", code, message);
-            }
-          } finally {
-            httpConnection.disconnect();
+          if (tracker != null) {
+            tracker.close();
           }
         }
       }
+
+      log.error("All {} attempts to create_close are failed", maxAttempts);
+      throw lastException;
+
     } finally {
-      log.debug("Bytes written: {}", size);
-      Tracker tracker = trackerFactory.getTracker();
-      try {
-        tracker.createClose(key, domain, destination, size);
-      } finally {
-        try {
-          tracker.close();
-        } finally {
-          unlockQuietly(writeLock);
-        }
-      }
+      unlockQuietly(writeLock);
     }
   }
 
