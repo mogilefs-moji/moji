@@ -9,14 +9,14 @@ class MojiFileAttributesImpl implements MojiFileAttributes {
   private final String storageClass;
   private final int deviceCount;
   private final long length;
-  private final int fid;
+  private final long fid;
   private final String domain;
   private final String key;
 
   MojiFileAttributesImpl(Map<String, String> valueMap) {
     length = Long.parseLong(valueMap.get("length"));
     domain = valueMap.get("domain");
-    fid = Integer.parseInt(valueMap.get("fid"));
+    fid = Long.parseLong(valueMap.get("fid"));
     deviceCount = Integer.parseInt(valueMap.get("devcount"));
     storageClass = valueMap.get("class");
     key = valueMap.get("key");
@@ -38,7 +38,7 @@ class MojiFileAttributesImpl implements MojiFileAttributes {
   }
 
   @Override
-  public int getFid() {
+  public long getFid() {
     return fid;
   }
 

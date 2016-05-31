@@ -8,7 +8,7 @@ public interface MojiFileAttributes {
 
   long getLength();
 
-  int getFid();
+  long getFid();
 
   String getDomain();
 
