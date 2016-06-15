@@ -34,7 +34,7 @@ class LocalMojiFileAttributes implements MojiFileAttributes {
   }
 
   @Override
-  public int getFid() {
+  public long getFid() {
     return 0;
   }
 
