@@ -94,15 +94,8 @@ class FileUploadOutputStream extends OutputStream {
           try {
             int code = httpConnection.getResponseCode();
             if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
-              InputStream is;
-              if (200 <= httpConnection.getResponseCode() && httpConnection.getResponseCode() <= 299) {
-                is = httpConnection.getInputStream();
-              } else {
-                is = httpConnection.getErrorStream();
-              }
-              String body = IOUtils.toString(is);
               String message = httpConnection.getResponseMessage();
-              throw new IOException(code + " " + message + " peer: '{" + httpConnection + "}'" + " body: '{" + body + "}'");
+              throw new IOException(code + " " + message + ", peer: '{" + httpConnection + "}'");
             }
           } finally {
             httpConnection.disconnect();
