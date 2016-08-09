@@ -41,6 +41,7 @@ class FileUploadOutputStream extends OutputStream {
   private final Lock writeLock;
   private final HttpURLConnection httpConnection;
   private final CountingOutputStream delegate;
+  private long size = -1L;
 
   FileUploadOutputStream(TrackerFactory trackerFactory, HttpConnectionFactory httpFactory, String key, String domain,
       Destination destination, Lock writeLock) throws IOException {
@@ -81,62 +82,67 @@ class FileUploadOutputStream extends OutputStream {
   @Override
   public void close() throws IOException {
     log.debug("Close called on {}", this);
-
     try {
-      // Step 1. finish data writing to store node
-      long size = -1L;
-      try {
-        delegate.flush();
-        size = delegate.getByteCount();
-        log.debug("Bytes written: {}", size);
-
-        String message = httpConnection.getResponseMessage();
-        int code = httpConnection.getResponseCode();
-        if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
-          throw new IOException(code + " " + message);
-        }
-      } finally {
-        try {
-          delegate.close();
-        } catch (Exception e) {
-          log.warn("Cannot close stream", e);
-        }
-        try {
-          httpConnection.disconnect();
-        } catch (Exception e) {
-          log.warn("Cannot close connection", e);
-        }
-      }
-
-      // Step 2. send create_close to tracker
-      /*
-         Fixed the maxAttempts = 2 so the behavior is just retry once. If there are only one
-         tracker, it gives the tracker a chance again; If there are dozens of tracker, it just try
-         another tracker a time, but does not waste time to try all trackers.
-       */
-      int maxAttempts = 2;
-      TrackerException lastException = null;
-      for (int attempt = 0; attempt < maxAttempts; attempt++) {
-        Tracker tracker = null;
-        try {
-          tracker = trackerFactory.getTracker();
-          tracker.createClose(key, domain, destination, size);
-          return;
-        } catch (TrackerException e) {
-          lastException = e;
-          log.warn("create_close attempts #{} failed", attempt);
-        } finally {
-          if (tracker != null) {
-            tracker.close();
-          }
-        }
-      }
-
-      log.error("All {} attempts to create_close are failed", maxAttempts);
-      throw lastException;
-
+      flushAndClose();
+      trackerCreateClose();
     } finally {
       unlockQuietly(writeLock);
+    }
+  }
+
+  /**
+   * Send create_close command to tracker to finish mogilefs file write procedure
+   * @throws TrackerException
+   */
+  private void trackerCreateClose() throws TrackerException {
+    /* Fixed the maxAttempts = 2 so the behavior is just retry once. If there are only one tracker,
+       it gives the tracker a chance again; If there are dozens of tracker, it just try another
+       tracker a time, but does not waste time to try all trackers. */
+    int maxAttempts = 2;
+    TrackerException lastException = null;
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      Tracker tracker = null;
+      try {
+        tracker = trackerFactory.getTracker();
+        tracker.createClose(key, domain, destination, size);
+        return;
+      } catch (TrackerException e) {
+        lastException = e;
+        /* Call attention to the user. User should diagnose the issue as soon as possible to prevent
+           additional latency caused by retry, or before all trackers are down. */
+        log.warn("create_close attempts " + maxAttempts + " failed", e);
+      } finally {
+        if (tracker != null) {
+          tracker.close();
+        }
+      }
+    }
+
+    log.error("All {} attempts to create_close are failed", maxAttempts);
+    throw lastException;
+  }
+
+  private void flushAndClose() throws IOException {
+    try {
+      delegate.flush();
+      size = delegate.getByteCount();
+      log.debug("Bytes written: {}", size);
+      int code = httpConnection.getResponseCode();
+      if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
+        String message = httpConnection.getResponseMessage();
+        throw new IOException(code + " " + message);
+      }
+    } finally {
+      try {
+        delegate.close();
+      } catch (Exception e) {
+        log.warn("Cannot close stream", e);
+      }
+      try {
+        httpConnection.disconnect();
+      } catch (Exception e) {
+        log.warn("Cannot close connection", e);
+      }
     }
   }
 

@@ -116,6 +116,20 @@ public class FileUploadOutputStreamTest {
   }
 
   @Test
+  public void trackerClosesOnFail() throws IOException {
+    doThrow(new RuntimeException()).when(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
+
+    try {
+      stream.write(1);
+      stream.close();
+    } catch (Exception e) {
+    }
+
+    verify(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
+    verify(mockTracker).close();
+  }
+
+  @Test
   public void writeIntDelegates() throws IOException {
     stream.write(1);
     verify(mockOutputStream).write(1);
