@@ -23,18 +23,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.URL;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.Tracker;
 import fm.last.moji.tracker.TrackerFactory;
+import fm.last.moji.tracker.impl.CommunicationException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileUploadOutputStreamTest {
@@ -57,6 +62,9 @@ public class FileUploadOutputStreamTest {
   private Tracker mockTracker;
   @Mock
   private Lock mockWriteLock;
+  
+  @Mock
+  private Set<InetSocketAddress> address;
   private FileUploadOutputStream stream;
 
   @Before
@@ -69,6 +77,8 @@ public class FileUploadOutputStreamTest {
     when(mockHttpConnection.getResponseMessage()).thenReturn("message");
     when(mockHttpConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
     when(mockTrackerFactory.getTracker()).thenReturn(mockTracker);
+    when(address.size()).thenReturn(1);
+    when(mockTrackerFactory.getAddresses()).thenReturn(address);
 
     stream = new FileUploadOutputStream(mockTrackerFactory, mockHttpFactory, KEY, DOMAIN, mockDestination,
         mockWriteLock);
@@ -94,6 +104,32 @@ public class FileUploadOutputStreamTest {
     verify(mockWriteLock).unlock();
   }
 
+  @Test
+  public void everyThingClosesWithFirstTrackerFail() throws IOException {
+	when(address.size()).thenReturn(2);
+    when(mockTrackerFactory.getTracker()).thenAnswer(new Answer<Tracker>() {
+    	boolean first = true;
+		@Override
+		public Tracker answer(InvocationOnMock invocation) throws Throwable {
+			if (first) {
+				first = false;
+				throw new CommunicationException("Errror on communication");
+			}
+			return mockTracker;
+		}
+	});
+
+    stream.write(1);
+    stream.close();
+
+    verify(mockOutputStream).flush();
+    verify(mockOutputStream).close();
+    verify(mockHttpConnection).disconnect();
+    verify(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
+    verify(mockTracker).close();
+    verify(mockWriteLock).unlock();
+  }  
+  
   @Test
   public void everyThingClosesEvenOnFail() throws IOException {
     doThrow(new RuntimeException()).when(mockOutputStream).flush();
