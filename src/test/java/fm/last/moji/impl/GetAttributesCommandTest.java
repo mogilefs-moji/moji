@@ -50,7 +50,7 @@ public class GetAttributesCommandTest {
     assertEquals(attributes.getStorageClass(), "default");
     assertEquals(attributes.getLength(), 100L);
     assertEquals(attributes.getDeviceCount(), 2);
-    assertEquals(attributes.getFid(), 5645);
+    assertEquals(attributes.getFid(), 5645L);
   }
 
   @Test

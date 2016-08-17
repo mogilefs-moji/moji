@@ -24,9 +24,9 @@ public class Destination {
 
   private final URL path;
   private final int devId;
-  private final int fid;
+  private final long fid;
 
-  public Destination(URL path, int devId, int fid) {
+  public Destination(URL path, int devId, long fid) {
     this.path = path;
     this.devId = devId;
     this.fid = fid;
@@ -40,7 +40,7 @@ public class Destination {
     return devId;
   }
 
-  public int getFid() {
+  public long getFid() {
     return fid;
   }
 

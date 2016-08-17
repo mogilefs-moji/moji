@@ -217,7 +217,7 @@ public class TrackerImplTest {
 
   @Test
   public void createCloseRequest() throws Exception {
-    Destination destination = new Destination(new URL("http://www.last.fm/1/"), 23, 32);
+    Destination destination = new Destination(new URL("http://www.last.fm/1/"), 23, 32L);
     tracker.createClose(KEY, DOMAIN, destination, SIZE);
     Request request = requestCaptor.getValue();
     assertThat(request.getCommand(), is("create_close"));

@@ -130,7 +130,7 @@ class FileUploadOutputStream extends OutputStream {
       int code = httpConnection.getResponseCode();
       if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
         String message = httpConnection.getResponseMessage();
-        throw new IOException(code + " " + message);
+        throw new IOException(code + " " + message + ", peer: '{" + httpConnection + "}'");
       }
     } finally {
       try {

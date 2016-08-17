@@ -78,7 +78,7 @@ class CreateOpenOperation {
   }
 
   private void extractReturnValues(Response response) throws TrackerException {
-    int fid = Integer.parseInt(response.getValue("fid"));
+    long fid = Long.parseLong(response.getValue("fid"));
     int pathCount = Integer.parseInt(response.getValue("dev_count"));
     destinations = new ArrayList<Destination>(pathCount);
 
