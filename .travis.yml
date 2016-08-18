@@ -1,1 +1,18 @@
+sudo: required
+
 language: java
+
+services:
+  - docker
+
+before_install:
+- docker pull jeffutter/mogile-node
+- docker pull hrchu/mogile-moji
+- docker rm -f mogile-node mogile-tracker
+- docker run -d -p 7500:7500 --name mogile-node jeffutter/mogile-node
+- docker run -it -p 7001:7001 --name mogile-tracker --link mogile-node:mogile-node hrchu/mogile-moji
+- sudo echo 172.17.0.2 mogile-node | sudo tee -a /etc/hosts
+
+script:
+- mvn test
+- mvn integration-test
