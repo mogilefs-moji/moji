@@ -20,13 +20,13 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.concurrent.locks.Lock;
 
-import fm.last.moji.tracker.TrackerException;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.Tracker;
+import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
 
 class FileUploadOutputStream extends OutputStream {
@@ -92,12 +92,15 @@ class FileUploadOutputStream extends OutputStream {
 
   /**
    * Send create_close command to tracker to finish mogilefs file write procedure
-   * @throws TrackerException
+   *
+   * @throws TrackerException If the create_close command fails.
    */
   private void trackerCreateClose() throws TrackerException {
-    /* Fixed the maxAttempts = 2 so the behavior is just retry once. If there are only one tracker,
-       it gives the tracker a chance again; If there are dozens of tracker, it just try another
-       tracker a time, but does not waste time to try all trackers. */
+    /*
+     * Fixed the maxAttempts = 2 so the behavior is just retry once. If there is only one tracker, it gives the tracker
+     * a second chance. If there are multiple trackers, it just tries one other tracker, but does not waste time trying
+     * all available trackers.
+     */
     int maxAttempts = 2;
     TrackerException lastException = null;
     for (int attempt = 0; attempt < maxAttempts; attempt++) {
@@ -108,9 +111,11 @@ class FileUploadOutputStream extends OutputStream {
         return;
       } catch (TrackerException e) {
         lastException = e;
-        /* Call attention to the user. User should diagnose the issue as soon as possible to prevent
-           additional latency caused by retry, or before all trackers are down. */
-        log.warn("create_close attempts " + maxAttempts + " failed", e);
+        /*
+         * Call attention to the user. User should diagnose the issue as soon as possible to prevent additional latency
+         * caused by retry, or before all trackers are down.
+         */
+        log.warn("create_close attempt {} failed", attempt + 1, e);
       } finally {
         if (tracker != null) {
           tracker.close();
@@ -118,7 +123,7 @@ class FileUploadOutputStream extends OutputStream {
       }
     }
 
-    log.error("All {} attempts to create_close are failed", maxAttempts);
+    log.error("All {} attempts to create_close failed", maxAttempts);
     throw lastException;
   }
 
@@ -130,18 +135,19 @@ class FileUploadOutputStream extends OutputStream {
       int code = httpConnection.getResponseCode();
       if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
         String message = httpConnection.getResponseMessage();
-        throw new IOException(code + " " + message + ", peer: '{" + httpConnection + "}'");
+        throw new IOException(
+            "HTTP Error during flush: " + code + ", " + message + ", peer: '{" + httpConnection + "}'");
       }
     } finally {
       try {
         delegate.close();
       } catch (Exception e) {
-        log.warn("Cannot close stream", e);
+        log.warn("Error closing stream", e);
       }
       try {
         httpConnection.disconnect();
       } catch (Exception e) {
-        log.warn("Cannot close connection", e);
+        log.warn("Error closing connection", e);
       }
     }
   }
