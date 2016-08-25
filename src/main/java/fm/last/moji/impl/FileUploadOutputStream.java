@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.Tracker;
+import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
 
 class FileUploadOutputStream extends OutputStream {
@@ -40,6 +41,7 @@ class FileUploadOutputStream extends OutputStream {
   private final Lock writeLock;
   private final HttpURLConnection httpConnection;
   private final CountingOutputStream delegate;
+  private long size = -1L;
 
   FileUploadOutputStream(TrackerFactory trackerFactory, HttpConnectionFactory httpFactory, String key, String domain,
       Destination destination, Lock writeLock) throws IOException {
@@ -80,37 +82,72 @@ class FileUploadOutputStream extends OutputStream {
   @Override
   public void close() throws IOException {
     log.debug("Close called on {}", this);
-    long size = -1L;
     try {
+      flushAndClose();
+      trackerCreateClose();
+    } finally {
+      unlockQuietly(writeLock);
+    }
+  }
+
+  /**
+   * Send create_close command to tracker to finish mogilefs file write procedure
+   *
+   * @throws TrackerException If the create_close command fails.
+   */
+  private void trackerCreateClose() throws TrackerException {
+    /*
+     * Fixed the maxAttempts = 2 so the behavior is just retry once. If there is only one tracker, it gives the tracker
+     * a second chance. If there are multiple trackers, it just tries one other tracker, but does not waste time trying
+     * all available trackers.
+     */
+    int maxAttempts = 2;
+    TrackerException lastException = null;
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      Tracker tracker = null;
       try {
-        delegate.flush();
-        size = delegate.getByteCount();
+        tracker = trackerFactory.getTracker();
+        tracker.createClose(key, domain, destination, size);
+        return;
+      } catch (TrackerException e) {
+        lastException = e;
+        /*
+         * Call attention to the user. User should diagnose the issue as soon as possible to prevent additional latency
+         * caused by retry, or before all trackers are down.
+         */
+        log.warn("create_close attempt {} failed", attempt + 1, e);
       } finally {
-        try {
-          delegate.close();
-        } finally {
-          try {
-            int code = httpConnection.getResponseCode();
-            if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
-              String message = httpConnection.getResponseMessage();
-              throw new IOException(code + " " + message + ", peer: '{" + httpConnection + "}'");
-            }
-          } finally {
-            httpConnection.disconnect();
-          }
+        if (tracker != null) {
+          tracker.close();
         }
       }
-    } finally {
+    }
+
+    log.error("All {} attempts to create_close failed", maxAttempts);
+    throw lastException;
+  }
+
+  private void flushAndClose() throws IOException {
+    try {
+      delegate.flush();
+      size = delegate.getByteCount();
       log.debug("Bytes written: {}", size);
-      Tracker tracker = trackerFactory.getTracker();
+      int code = httpConnection.getResponseCode();
+      if (HttpURLConnection.HTTP_OK != code && HttpURLConnection.HTTP_CREATED != code) {
+        String message = httpConnection.getResponseMessage();
+        throw new IOException(
+            "HTTP Error during flush: " + code + ", " + message + ", peer: '{" + httpConnection + "}'");
+      }
+    } finally {
       try {
-        tracker.createClose(key, domain, destination, size);
-      } finally {
-        try {
-          tracker.close();
-        } finally {
-          unlockQuietly(writeLock);
-        }
+        delegate.close();
+      } catch (Exception e) {
+        log.warn("Error closing stream", e);
+      }
+      try {
+        httpConnection.disconnect();
+      } catch (Exception e) {
+        log.warn("Error closing connection", e);
       }
     }
   }
