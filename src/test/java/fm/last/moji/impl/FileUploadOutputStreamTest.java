@@ -15,7 +15,9 @@
  */
 package fm.last.moji.impl;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import fm.last.moji.tracker.Destination;
 import fm.last.moji.tracker.Tracker;
+import fm.last.moji.tracker.TrackerException;
 import fm.last.moji.tracker.TrackerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -115,18 +118,73 @@ public class FileUploadOutputStreamTest {
     verify(mockWriteLock).unlock();
   }
 
+  @Test(expected = NullPointerException.class)
+  public void nullTrackerFromFactory() throws IOException {
+    when(mockTrackerFactory.getTracker()).thenReturn(null);
+
+    stream.write(1);
+    stream.close();
+  }
+
   @Test
-  public void trackerClosesOnFail() throws IOException {
-    doThrow(new RuntimeException()).when(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
+  public void trackerClosesOnFailSecondAttemptSucceeds() throws IOException {
+    doThrow(new TrackerException()).doNothing().when(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
+
+    stream.write(1);
+    stream.close();
+
+    verify(mockTrackerFactory, times(2)).getTracker();
+    verify(mockTracker, times(2)).close();
+  }
+
+  @Test
+  public void trackerClosesOnFailMaxAttempts() throws IOException {
+    doThrow(new TrackerException()).when(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
 
     try {
       stream.write(1);
       stream.close();
-    } catch (Exception e) {
+      fail("Exception expected");
+    } catch (TrackerException e) {
     }
 
-    verify(mockTracker).createClose(KEY, DOMAIN, mockDestination, 1);
-    verify(mockTracker).close();
+    verify(mockTrackerFactory, times(2)).getTracker();
+    verify(mockTracker, times(2)).close();
+  }
+
+  @Test
+  public void flushResponseCodeCreated() throws IOException {
+    when(mockHttpConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_CREATED);
+
+    stream.write(1);
+    stream.close();
+
+    verify(mockOutputStream).write(1);
+    verify(mockHttpConnection).disconnect();
+  }
+
+  @Test
+  public void flushResponseCodeNotOKOrCreated() throws IOException {
+    when(mockHttpConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_UNAVAILABLE);
+
+    stream.write(1);
+    try {
+      stream.close();
+      fail("IOException should be thrown");
+    } catch (IOException e) {
+    }
+
+    verify(mockHttpConnection).disconnect();
+  }
+
+  @Test
+  public void flushAndDisconnectError() throws IOException {
+    doThrow(new RuntimeException()).when(mockHttpConnection).disconnect();
+
+    stream.write(1);
+    stream.close();
+
+    verify(mockHttpConnection).disconnect();
   }
 
   @Test
