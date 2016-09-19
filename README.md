@@ -132,7 +132,7 @@ MogileFS integration test properties config:
 * Declare your Mogile domain with the property:
 
         moji.domain
-* Declare two storage classes in your Mogile instance and assign them with these properties:
+* Declare two storage classes (class assigned here should have devcount=1 if there are multiple storage nodes in the environment) in your Mogile instance and assign them with these properties:
 
         test.moji.class.a
         test.moji.class.b
