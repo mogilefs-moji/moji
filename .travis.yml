@@ -14,5 +14,5 @@ before_install:
 - sleep 5
 
 script:
-- mvn test
-- mvn integration-test
+- mvn verify
+
