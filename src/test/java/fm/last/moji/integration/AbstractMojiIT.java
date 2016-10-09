@@ -15,15 +15,9 @@
  */
 package fm.last.moji.integration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
+import fm.last.moji.MojiFile;
+import fm.last.moji.spring.SpringMojiBean;
+import fm.last.moji.tracker.UnknownKeyException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
@@ -31,9 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 
-import fm.last.moji.MojiFile;
-import fm.last.moji.spring.SpringMojiBean;
-import fm.last.moji.tracker.UnknownKeyException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
 
 @Ignore("abstract")
 abstract public class AbstractMojiIT {
@@ -44,6 +40,8 @@ abstract public class AbstractMojiIT {
   String keyPrefix;
   String storageClassA;
   String storageClassB;
+
+  private static boolean initMogileTestDataIsDone = false;
 
   @Before
   public void setUp() throws Exception {
@@ -66,6 +64,8 @@ abstract public class AbstractMojiIT {
     moji.setDomain(domain);
     moji.initialise();
     moji.setTestOnBorrow(true);
+
+    initMogileTestData();
   }
 
   @After
@@ -133,4 +133,53 @@ abstract public class AbstractMojiIT {
     return newKey(RandomStringUtils.randomAlphanumeric(16));
   }
 
+  private void initMogileTestData() throws IOException {
+    if(initMogileTestDataIsDone) {
+      return;
+    }
+    clearTestData();
+    uploadFile("fileOfKnownSize", "src/test/data/fileOfKnownSize.dat");
+    uploadFile("attributes", "src/test/data/fileOfKnownSize.dat");
+    uploadFile("mogileFileCopyToFile", "src/test/data/mogileFileCopyToFile.dat");
+    uploadNewRandomFile("overwriteThenReadBack");
+    uploadNewRandomFile("exists");
+    uploadNewRandomFile("notExistsAfterDelete");
+    uploadNewRandomFile("rename");
+    uploadNewRandomFile("renameExistingKey1");
+    uploadNewRandomFile("renameExistingKey2");
+    uploadNewRandomFile("updateStorageClass");
+    uploadNewRandomFile("updateStorageClassToUnknown");
+    uploadNewRandomFile("list1");
+    uploadNewRandomFile("list2");
+    uploadNewRandomFile("list3");
+    uploadNewRandomFile("getPaths");
+    initMogileTestDataIsDone = true;
+  }
+
+  private void clearTestData() throws IOException {
+    List<MojiFile> files = moji.list(keyPrefix);
+    for (MojiFile file : files) {
+      System.out.println("Deleting: " + file.getKey() + " ...");
+      file.delete();
+    }
+  }
+
+  private void uploadNewRandomFile(String key) throws IOException {
+    MojiFile file = moji.getFile(keyPrefix + key, storageClassA);
+    InputStream is = null;
+    OutputStream os = null;
+    try {
+      is = new ByteArrayInputStream(UUID.randomUUID().toString().getBytes());
+      os = file.getOutputStream();
+      IOUtils.copy(is, os);
+    } finally {
+      IOUtils.closeQuietly(is);
+      IOUtils.closeQuietly(os);
+    }
+  }
+
+  private void uploadFile(String key, String fileName) throws IOException {
+    MojiFile file = moji.getFile(keyPrefix + key, storageClassA);
+    moji.copyToMogile(new File(fileName), file);
+  }
 }

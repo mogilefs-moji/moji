@@ -50,62 +50,6 @@
     <filters>
       <filter>${project.basedir}/src/test/resources/moji.properties</filter>
     </filters>
-
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <id>add-test-resource</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>add-test-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>src/test/script</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>**/*.sh</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <id>annoying-chmod</id>
-            <phase>pre-integration-test</phase>
-            <configuration>
-              <executable>${project.basedir}/src/test/script/permission-change.sh</executable>
-            </configuration>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>init-mogile-fs-test-data</id>
-            <phase>pre-integration-test</phase>
-            <configuration>
-              <executable>${project.basedir}/target/test-classes/init-mogile-test-data.sh</executable>
-              <workingDirectory>${project.basedir}/src/test</workingDirectory>
-            </configuration>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
 
   <dependencies>
