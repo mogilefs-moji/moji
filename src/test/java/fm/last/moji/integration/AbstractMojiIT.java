@@ -23,6 +23,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 import java.io.*;
@@ -36,36 +37,35 @@ abstract public class AbstractMojiIT {
 
   private final List<MojiFile> mojiFiles = new ArrayList<MojiFile>();
 
-  SpringMojiBean moji;
-  String keyPrefix;
-  String storageClassA;
-  String storageClassB;
+  static SpringMojiBean moji;
+  static String keyPrefix;
+  static String storageClassA;
+  static String storageClassB;
 
-  private static boolean initMogileTestDataIsDone = false;
+  @BeforeClass
+  static public void initMogileTestData() throws Exception {
+    initMoji();
+    clearTestData();
+    uploadFile("fileOfKnownSize", "src/test/data/fileOfKnownSize.dat");
+    uploadFile("attributes", "src/test/data/fileOfKnownSize.dat");
+    uploadFile("mogileFileCopyToFile", "src/test/data/mogileFileCopyToFile.dat");
+    uploadNewRandomFile("overwriteThenReadBack");
+    uploadNewRandomFile("exists");
+    uploadNewRandomFile("notExistsAfterDelete");
+    uploadNewRandomFile("rename");
+    uploadNewRandomFile("renameExistingKey1");
+    uploadNewRandomFile("renameExistingKey2");
+    uploadNewRandomFile("updateStorageClass");
+    uploadNewRandomFile("updateStorageClassToUnknown");
+    uploadNewRandomFile("list1");
+    uploadNewRandomFile("list2");
+    uploadNewRandomFile("list3");
+    uploadNewRandomFile("getPaths");
+  }
 
   @Before
   public void setUp() throws Exception {
-    String env = System.getProperty("env", "");
-    if (!"".equals(env)) {
-      env = "." + env;
-    }
-    Properties properties = new Properties();
-    properties.load(getClass().getResourceAsStream("/moji.properties" + env));
-
-    String hosts = properties.getProperty("moji.tracker.hosts");
-    String domain = properties.getProperty("moji.domain");
-
-    keyPrefix = properties.getProperty("test.moji.key.prefix");
-    storageClassA = properties.getProperty("test.moji.class.a");
-    storageClassB = properties.getProperty("test.moji.class.b");
-
-    moji = new SpringMojiBean();
-    moji.setAddressesCsv(hosts);
-    moji.setDomain(domain);
-    moji.initialise();
-    moji.setTestOnBorrow(true);
-
-    initMogileTestData();
+    initMoji();
   }
 
   @After
@@ -133,30 +133,7 @@ abstract public class AbstractMojiIT {
     return newKey(RandomStringUtils.randomAlphanumeric(16));
   }
 
-  private void initMogileTestData() throws IOException {
-    if(initMogileTestDataIsDone) {
-      return;
-    }
-    clearTestData();
-    uploadFile("fileOfKnownSize", "src/test/data/fileOfKnownSize.dat");
-    uploadFile("attributes", "src/test/data/fileOfKnownSize.dat");
-    uploadFile("mogileFileCopyToFile", "src/test/data/mogileFileCopyToFile.dat");
-    uploadNewRandomFile("overwriteThenReadBack");
-    uploadNewRandomFile("exists");
-    uploadNewRandomFile("notExistsAfterDelete");
-    uploadNewRandomFile("rename");
-    uploadNewRandomFile("renameExistingKey1");
-    uploadNewRandomFile("renameExistingKey2");
-    uploadNewRandomFile("updateStorageClass");
-    uploadNewRandomFile("updateStorageClassToUnknown");
-    uploadNewRandomFile("list1");
-    uploadNewRandomFile("list2");
-    uploadNewRandomFile("list3");
-    uploadNewRandomFile("getPaths");
-    initMogileTestDataIsDone = true;
-  }
-
-  private void clearTestData() throws IOException {
+  private static void clearTestData() throws IOException {
     List<MojiFile> files = moji.list(keyPrefix);
     for (MojiFile file : files) {
       System.out.println("Deleting: " + file.getKey() + " ...");
@@ -164,7 +141,7 @@ abstract public class AbstractMojiIT {
     }
   }
 
-  private void uploadNewRandomFile(String key) throws IOException {
+  private static void uploadNewRandomFile(String key) throws IOException {
     MojiFile file = moji.getFile(keyPrefix + key, storageClassA);
     InputStream is = null;
     OutputStream os = null;
@@ -178,8 +155,30 @@ abstract public class AbstractMojiIT {
     }
   }
 
-  private void uploadFile(String key, String fileName) throws IOException {
+  private static void uploadFile(String key, String fileName) throws IOException {
     MojiFile file = moji.getFile(keyPrefix + key, storageClassA);
     moji.copyToMogile(new File(fileName), file);
+  }
+
+  private static void initMoji() throws IOException {
+    String env = System.getProperty("env", "");
+    if (!"".equals(env)) {
+      env = "." + env;
+    }
+    Properties properties = new Properties();
+    properties.load(AbstractMojiIT.class.getResourceAsStream("/moji.properties" + env));
+
+    String hosts = properties.getProperty("moji.tracker.hosts");
+    String domain = properties.getProperty("moji.domain");
+
+    keyPrefix = properties.getProperty("test.moji.key.prefix");
+    storageClassA = properties.getProperty("test.moji.class.a");
+    storageClassB = properties.getProperty("test.moji.class.b");
+
+    moji = new SpringMojiBean();
+    moji.setAddressesCsv(hosts);
+    moji.setDomain(domain);
+    moji.initialise();
+    moji.setTestOnBorrow(true);
   }
 }
