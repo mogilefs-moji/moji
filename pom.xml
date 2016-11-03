@@ -83,6 +83,7 @@
       <groupId>fm.last.commons</groupId>
       <artifactId>lastcommons-test</artifactId>
       <version>5.1.2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
