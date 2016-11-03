@@ -15,9 +15,18 @@
  */
 package fm.last.moji.integration;
 
-import fm.last.moji.MojiFile;
-import fm.last.moji.spring.SpringMojiBean;
-import fm.last.moji.tracker.UnknownKeyException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
@@ -25,15 +34,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Rule;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import fm.last.commons.test.file.DataFolder;
+import fm.last.commons.test.file.RootDataFolder;
+import fm.last.moji.MojiFile;
+import fm.last.moji.spring.SpringMojiBean;
+import fm.last.moji.tracker.UnknownKeyException;
 
 @Ignore("abstract")
 abstract public class AbstractMojiIT {
+
+  @Rule
+  public static DataFolder dataFolder = new RootDataFolder();
 
   private final List<MojiFile> mojiFiles = new ArrayList<MojiFile>();
 
@@ -46,9 +59,9 @@ abstract public class AbstractMojiIT {
   static public void initMogileTestData() throws Exception {
     initMoji();
     clearTestData();
-    uploadFile("fileOfKnownSize", "src/test/data/fileOfKnownSize.dat");
-    uploadFile("attributes", "src/test/data/fileOfKnownSize.dat");
-    uploadFile("mogileFileCopyToFile", "src/test/data/mogileFileCopyToFile.dat");
+    uploadFile("fileOfKnownSize", dataFolder.getFile("fileOfKnownSize.dat"));
+    uploadFile("attributes", dataFolder.getFile("fileOfKnownSize.dat"));
+    uploadFile("mogileFileCopyToFile", dataFolder.getFile("mogileFileCopyToFile.dat"));
     uploadNewRandomFile("overwriteThenReadBack");
     uploadNewRandomFile("exists");
     uploadNewRandomFile("notExistsAfterDelete");
@@ -136,7 +149,6 @@ abstract public class AbstractMojiIT {
   private static void clearTestData() throws IOException {
     List<MojiFile> files = moji.list(keyPrefix);
     for (MojiFile file : files) {
-      System.out.println("Deleting: " + file.getKey() + " ...");
       file.delete();
     }
   }
@@ -155,9 +167,9 @@ abstract public class AbstractMojiIT {
     }
   }
 
-  private static void uploadFile(String key, String fileName) throws IOException {
+  private static void uploadFile(String key, File fileToUpload) throws IOException {
     MojiFile file = moji.getFile(keyPrefix + key, storageClassA);
-    moji.copyToMogile(new File(fileName), file);
+    moji.copyToMogile(fileToUpload, file);
   }
 
   private static void initMoji() throws IOException {
