@@ -18,8 +18,8 @@
   <url>https://github.com/mogilefs-moji/moji/</url>
 
   <scm>
-    <connection>git@github.com:mogilefs-moji/${project.artifactId}.git</connection>
-    <developerConnection>git@github.com:mogilefs-moji/${project.artifactId}.git</developerConnection>
+    <connection>scm:git:git@github.com:mogilefs-moji/${project.artifactId}.git</connection>
+    <developerConnection>scm:git:git@github.com:mogilefs-moji/${project.artifactId}.git</developerConnection>
     <url>https://github.com/mogilefs-moji/${project.artifactId}</url>
     <tag>HEAD</tag>
   </scm>
