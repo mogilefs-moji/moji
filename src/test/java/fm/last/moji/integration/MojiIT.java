@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import fm.last.moji.MojiFile;
 
-@Ignore("temporarily ignoring to test release process")
 public class MojiIT extends AbstractMojiIT {
 
   @Rule
