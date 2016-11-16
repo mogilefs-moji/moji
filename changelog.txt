@@ -1,5 +1,5 @@
-TBA
-- Log more http info when an error occurs closing the file upload stream (https://github.com/mogilefs-moji/moji/pull/23)
+2.0.0 (2016-11-16)
+- Log more HTTP info when an error occurs closing the file upload stream (https://github.com/mogilefs-moji/moji/pull/23)
 - Changed fid from an int to a long (https://github.com/mogilefs-moji/moji/pull/22)
 
 1.4.2 (2016-02-03)
