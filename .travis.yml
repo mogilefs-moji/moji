@@ -14,5 +14,7 @@ before_install:
 - sleep 5
 
 script:
-- mvn test
-- mvn integration-test
+- mvn verify
+
+after_failure:
+  - cat target/surefire-reports/*.txt
