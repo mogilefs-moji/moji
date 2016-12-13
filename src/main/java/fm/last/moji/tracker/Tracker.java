@@ -22,8 +22,7 @@ import java.util.Map;
 /**
  * Service interface of the MogileFS 'backend'.
  * 
- * @see The <a href="http://cpansearch.perl.org/src/DORMANDO/MogileFS-Client-1.14/lib/MogileFS/Client.pm">Perl MogileFS
- *      client</a>.
+ * @see <a href="http://cpansearch.perl.org/src/DORMANDO/MogileFS-Client-1.14/lib/MogileFS/Client.pm">Perl MogileFS client</a>.
  */
 public interface Tracker {
 
