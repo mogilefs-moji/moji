@@ -1,11 +1,11 @@
-#About
+# About
 A file-like [MogileFS](http://danga.com/mogilefs/ "Danga Interactive - MogileFS") client for Java.
 
-#Start using
+# Start using
 You can obtain Moji from Maven Central using the following identifier:
 * [fm.last:moji:2.0.0](http://search.maven.org/#artifactdetails%7Cfm.last%7Cmoji%7C2.0.0%7Cjar)
 
-#Features
+# Features
 * `java.io.File` like API
 * Supports writing streams of unknown length
 * Unit/Integration tests
@@ -13,7 +13,7 @@ You can obtain Moji from Maven Central using the following identifier:
 * Tracker connection pooling with balancing between hosts and strategies for dealing with failed nodes
 * Local file system implementation for faking in tests (`fm.last.moji.local.LocalFileSystemMoji`)
 
-#Configuration
+# Configuration
 ### Using plain-old-Java
         SpringMojiBean moji = new SpringMojiBean();
         moji.setAddressesCsv("192.168.0.1:7001,192.168.0.2:7001");
@@ -40,8 +40,8 @@ Import the Moji Spring context:
           <property name="testOnBorrow" value="${moji.pool.test.on.borrow:true}" />
         </bean>
 
-#Usage
-####Create/update a remote file
+# Usage
+#### Create/update a remote file
         MojiFile rickRoll = moji.getFile("rick-astley");
         moji.copyToMogile(new File("never-gonna-give-you-up.mp3"), rickRoll);
         
@@ -49,23 +49,23 @@ Or in a given storage class:
 
         MojiFile rickRoll = moji.getFile("rick-astley", "music-meme");
 
-####Get the remote file size
+#### Get the remote file size
         long length = rickRoll.length();
-####Rename the remote file
+#### Rename the remote file
         rickRoll.rename("stairway-to-heaven");
-####Check the existence of a remote file
+#### Check the existence of a remote file
         MojiFile abba = moji.getFile("voulez-vous");
         if (abba.exists()) {
           ...
-####Delete the remote file
+#### Delete the remote file
         abba.delete();
-####Download a remote file
+#### Download a remote file
         MojiFile fooFighters = moji.getFile("stacked-actors");
         fooFighters.copyToFile(new File("foo-fighters.mp3"));
-####Modify the storage class of a remote file
+#### Modify the storage class of a remote file
         fooFighters.modifyStorageClass("awesome");
 
-####Stream from a remote file
+#### Stream from a remote file
         InputStream stream = null;
         try {
           stream = fooFighters.getInputStream();
@@ -75,7 +75,7 @@ Or in a given storage class:
           stream.close();
         }
 
-####Stream to a remote file
+#### Stream to a remote file
 This will either create a new file or overwrite an existing file's contents
 
         OutputStream stream = null;
@@ -87,7 +87,7 @@ This will either create a new file or overwrite an existing file's contents
         } finally {
           stream.close();
         }
-####List remote files by prefix
+#### List remote files by prefix
         List<MojiFile> files = moji.list("abba-");
         for(MojiFile file : files) {
           // abba-waterloo, abba-voulez-vous, abba-fernado, etc.
@@ -100,12 +100,12 @@ Impose a limit on the number of items returned:
           // abba-waterloo, abba-voulez-vous, abba-fernado, etc. - maximum of 10
         }
 
-####Get the locations of a remote file
+#### Get the locations of a remote file
         File fooFighters = moji.getFile("in-your-honour"); 
         List<URL> paths = fooFighters.getPaths();
         // http://192.168.0.2:7500/dev2/0/000/000/0000000819.fid, http://192.168.0.4:7500/dev3/0/000/000/0000000819.fid, etc
 
-####Get the attributes of a remote file
+#### Get the attributes of a remote file
 Note: this is only supported on more recent versions of MogileFS.
 
         File fooFighters = moji.getFile("in-your-honour"); 
@@ -115,7 +115,7 @@ Note: this is only supported on more recent versions of MogileFS.
         int deviceCount = attributes.getDeviceCount();
         int fid = attributes.getFid();
 
-#Running the integration tests
+# Running the integration tests
 To run the integration tests, you can make use of ready-to-use [docker image](https://hub.docker.com/r/hrchu/mogile-moji/), or setup the environment manually. For manual setup, you need:
 
 * A test MogileFS tracker and a storage node ([installation instructions](http://code.google.com/p/mogilefs/wiki/InstallHowTo "Google Code - MogileFS installation instructions"))
@@ -137,13 +137,13 @@ MogileFS integration test properties config:
 
         test.moji.key.prefix
 
-#Building
+# Building
 This project uses the [Maven](http://maven.apache.org/) build system.
 
-#Contributing
+# Contributing
 All contributions are welcome. Please use the [Last.fm codeformatting profile](https://github.com/lastfm/lastfm-oss-config/blob/master/src/main/resources/fm/last/last.fm.eclipse-codeformatter-profile.xml) found in the `lastfm-oss-config` project for formatting your changes.
 
-#Legal
+# Legal
 Copyright 2012-2016 [Last.fm](http://www.last.fm/) & The "mogilefs-moji" committers.
 
 Licensed under the Apache License, Version 2.0 (the "License");
