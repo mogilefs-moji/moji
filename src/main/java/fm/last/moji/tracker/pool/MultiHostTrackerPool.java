@@ -103,8 +103,10 @@ public class MultiHostTrackerPool implements TrackerFactory {
   @Override
   public Set<InetSocketAddress> getAddresses() {
     Set<InetSocketAddress> addresses = new HashSet<InetSocketAddress>();
-    for (ManagedTrackerHost host : managedHosts) {
-      addresses.add(host.getAddress());
+    synchronized (managedHosts) {
+      for (ManagedTrackerHost host : managedHosts) {
+        addresses.add(host.getAddress());
+      }
     }
     return Collections.unmodifiableSet(new HashSet<InetSocketAddress>(addresses));
   }
