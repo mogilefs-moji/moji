@@ -72,7 +72,7 @@ class MojiImpl implements Moji {
       outputStream.flush();
     } finally {
       IOUtils.closeQuietly(inputStream);
-      IOUtils.closeQuietly(outputStream);
+      outputStream.close();;
     }
   }
 
