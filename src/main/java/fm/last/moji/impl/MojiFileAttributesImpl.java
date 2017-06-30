@@ -12,6 +12,7 @@ class MojiFileAttributesImpl implements MojiFileAttributes {
   private final long fid;
   private final String domain;
   private final String key;
+  private final String checksum;
 
   MojiFileAttributesImpl(Map<String, String> valueMap) {
     length = Long.parseLong(valueMap.get("length"));
@@ -20,6 +21,7 @@ class MojiFileAttributesImpl implements MojiFileAttributes {
     deviceCount = Integer.parseInt(valueMap.get("devcount"));
     storageClass = valueMap.get("class");
     key = valueMap.get("key");
+    checksum = valueMap.get("checksum");
   }
 
   @Override
@@ -53,6 +55,11 @@ class MojiFileAttributesImpl implements MojiFileAttributes {
   }
 
   @Override
+  public String getChecksum() {
+    return checksum;
+  }
+
+  @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("MojiFileAttributesImpl [domain=");
@@ -65,6 +72,8 @@ class MojiFileAttributesImpl implements MojiFileAttributes {
     builder.append(length);
     builder.append(", fid=");
     builder.append(fid);
+    builder.append(", checksum=");
+    builder.append(checksum);
     builder.append(", deviceCount=");
     builder.append(deviceCount);
     builder.append("]");

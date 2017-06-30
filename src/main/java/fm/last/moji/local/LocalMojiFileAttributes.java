@@ -1,8 +1,13 @@
 package fm.last.moji.local;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 
 import fm.last.moji.MojiFileAttributes;
 
@@ -46,6 +51,19 @@ class LocalMojiFileAttributes implements MojiFileAttributes {
   @Override
   public String getKey() {
     return mojiFile.getKey();
+  }
+
+  @Override
+  public String getChecksum() {
+    InputStream in = null;
+    try {
+      in = mojiFile.getInputStream();
+      return String.format("MD5:%s", Hex.encodeHexString(DigestUtils.md5(in)));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
 }
