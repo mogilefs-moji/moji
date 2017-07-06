@@ -14,4 +14,6 @@ public interface MojiFileAttributes {
 
   String getKey();
 
+  String getChecksum();
+
 }

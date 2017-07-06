@@ -18,6 +18,7 @@ public class MojiFileAttributesImplTest {
     valueMap.put("length", "100");
     valueMap.put("devcount", "2");
     valueMap.put("fid", "5645");
+    valueMap.put("checksum", "MD5:f178b0937249db0b7ea324c19bae5c79");
 
     MojiFileAttributesImpl attributes = new MojiFileAttributesImpl(valueMap);
     assertEquals(attributes.getDomain(), "domain2");
@@ -26,6 +27,27 @@ public class MojiFileAttributesImplTest {
     assertEquals(attributes.getLength(), 100L);
     assertEquals(attributes.getDeviceCount(), 2);
     assertEquals(attributes.getFid(), 5645L);
+    assertEquals(attributes.getChecksum(), "MD5:f178b0937249db0b7ea324c19bae5c79");
+  }
+
+  @Test
+  public void noChecksum() {
+    Map<String, String> valueMap = new HashMap<String, String>();
+    valueMap.put("domain", "domain2");
+    valueMap.put("key", "key2");
+    valueMap.put("class", "default");
+    valueMap.put("length", "100");
+    valueMap.put("devcount", "2");
+    valueMap.put("fid", "5645");
+
+    MojiFileAttributesImpl attributes = new MojiFileAttributesImpl(valueMap);
+    assertEquals(attributes.getDomain(), "domain2");
+    assertEquals(attributes.getKey(), "key2");
+    assertEquals(attributes.getStorageClass(), "default");
+    assertEquals(attributes.getLength(), 100L);
+    assertEquals(attributes.getDeviceCount(), 2);
+    assertEquals(attributes.getFid(), 5645L);
+    assertEquals(attributes.getChecksum(), null);
   }
 
 }
