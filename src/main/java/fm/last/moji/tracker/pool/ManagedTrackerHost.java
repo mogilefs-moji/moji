@@ -58,7 +58,7 @@ public class ManagedTrackerHost {
   }
 
   ManagedTrackerHost(InetSocketAddress address) {
-    this(address, new Timer(), Clock.INSTANCE);
+    this(address, new Timer(true), Clock.INSTANCE);
   }
 
   /**
