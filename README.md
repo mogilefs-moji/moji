@@ -144,7 +144,7 @@ This project uses the [Maven](http://maven.apache.org/) build system.
 All contributions are welcome. Please use the [Last.fm codeformatting profile](https://github.com/lastfm/lastfm-oss-config/blob/master/src/main/resources/fm/last/last.fm.eclipse-codeformatter-profile.xml) found in the `lastfm-oss-config` project for formatting your changes.
 
 # Legal
-Copyright 2012-2016 [Last.fm](http://www.last.fm/) & The "mogilefs-moji" committers.
+Copyright 2012-2017 [Last.fm](http://www.last.fm/) & The "mogilefs-moji" committers.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
