@@ -27,12 +27,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import fm.last.moji.MojiFile;
 
+@Ignore("build machine can't run ITs at the moment")
 public class MojiIT extends AbstractMojiIT {
 
   @Rule
