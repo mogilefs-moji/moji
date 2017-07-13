@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>moji</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1-SNAPSHOT</version>
   <name>Moji</name>
   <description>A File-like MogileFS client</description>
   <inceptionYear>2012</inceptionYear>
