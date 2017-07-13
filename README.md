@@ -2,7 +2,7 @@
 A file-like [MogileFS](http://danga.com/mogilefs/ "Danga Interactive - MogileFS") client for Java.
 
 ## Start using
-You can obtain Moji from Maven Central : 
+You can obtain Moji from Maven Central: 
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fm.last/moji/badge.svg?subject=fm.last:moji)](https://maven-badges.herokuapp.com/maven-central/fm.last/moji) ![GitHub license](https://img.shields.io/github/license/mogilefs-moji/moji.svg)
 
