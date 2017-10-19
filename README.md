@@ -119,7 +119,7 @@ Note: this is only supported on more recent versions of MogileFS.
 # Running the integration tests
 To run the integration tests, you can make use of ready-to-use [docker image](https://hub.docker.com/r/hrchu/mogile-moji/), or setup the environment manually. For manual setup, you need:
 
-* A test MogileFS tracker and a storage node ([installation instructions](http://code.google.com/p/mogilefs/wiki/InstallHowTo "Google Code - MogileFS installation instructions"))
+* A test MogileFS tracker and a storage node ([installation instructions](https://github.com/hrchu/mogilefs/blob/wiki/InstallHowTo.md))
 
 MogileFS integration test properties config:
 
