@@ -5,6 +5,7 @@ A file-like [MogileFS](http://danga.com/mogilefs/ "Danga Interactive - MogileFS"
 You can obtain Moji from Maven Central: 
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fm.last/moji/badge.svg?subject=fm.last:moji)](https://maven-badges.herokuapp.com/maven-central/fm.last/moji) ![GitHub license](https://img.shields.io/github/license/mogilefs-moji/moji.svg)
+[![Javadocs](http://javadoc.io/badge/fm.last/moji.svg)](http://javadoc.io/doc/fm.last/moji)
 
 # Features
 * `java.io.File` like API
